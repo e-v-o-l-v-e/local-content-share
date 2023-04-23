@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rendered Markdown</title>
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark-dimmed.css"> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/hyrious/github-markdown-css@main/dist/dark-dark_dimmed.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/primer/16.0.1/build.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark-dimmed.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <style>
+    body {
+        background-color: #22272e;
+    }
+  </style>
+</head>
+<body>
+  <div class="markdown-container">
+    <article class="markdown-body">
+      {{ html|safe }}
+    </article>
+  </div>
+</body>
+</html>
+
