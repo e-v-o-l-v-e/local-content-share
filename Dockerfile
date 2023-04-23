@@ -1,11 +1,11 @@
-FROM python
+FROM python:alpine3.17
 
 WORKDIR /app
 
 COPY . .
 
 RUN mkdir data && \
-    pip install flask flask-markdown uuid pygments pygments-style-github
+    pip install flask flask-markdown
 
 ENV FLASK_APP=app.py
 

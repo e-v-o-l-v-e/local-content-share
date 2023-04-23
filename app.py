@@ -1,9 +1,6 @@
 import os
 import uuid
 import markdown
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import html
 from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
@@ -29,6 +26,10 @@ def home():
 def printit():
     return render_template("print.html", markdown=markdown)
 
+@app.route("/darkprint")
+def printit():
+    return render_template("print.html", markdown=markdown)
+
 @app.route("/print_text", methods=["POST"])
 def print_text():
     text = request.form["demo-message"]
@@ -36,6 +37,14 @@ def print_text():
     with open(filepath, "w") as f:
         f.write(text)
     return redirect(url_for("render_text", filename="temporary-print"))
+
+@app.route("/darkprint_text", methods=["POST"])
+def darkprint_text():
+    text = request.form["demo-message"]
+    filepath = os.path.join("data", "temporary-print")
+    with open(filepath, "w") as f:
+        f.write(text)
+    return redirect(url_for("render_dark_text", filename="temporary-print"))
 
 @app.route("/submit_text", methods=["POST"])
 def submit_text():
