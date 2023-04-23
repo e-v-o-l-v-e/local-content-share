@@ -10,7 +10,7 @@ This application can be used for 2 things &rarr;
 Assuming that the application is deployed at a system with the hostname `galaxy`, the following actions can be taken &rarr;
 
 - Visit `http://galaxy.local` and add markdown text. Entries will be persisted and listed at the bottom with the first line visible and options to view raw, github-flavored render, github-flavored render with dark theme, and delete.
-- Visit `http://galaxy.local/print` to simply paste and render markdown text in github-flavor or visit `http://galaxy.local/print_dark` to render in github-flavor dark mode. 
+- Visit `http://galaxy.local/print` to simply paste and render markdown text in github-flavor or visit `http://galaxy.local/darkprint` to render in github-flavor dark mode. 
 
 ### Installation
 

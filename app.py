@@ -8,9 +8,10 @@ app.jinja_env.filters["markdown"] = markdown.markdown
 
 @app.route("/")
 def home():
-    filenames = []
     entries = []
     for filename in os.listdir("data"):
+        if filename == "temporary-print":
+            continue
         with open(os.path.join("data", filename)) as f:
             text = f.readlines()
         # if len(text) > 4:
@@ -18,17 +19,16 @@ def home():
         # else:
         #     text = '\n'.join(text)
         text = text[0]
-        filenames.append(filename)
         entries.append((filename, text))
-    return render_template("index.html", entries=entries, filenames=filenames, markdown=markdown)
+    return render_template("index.html", entries=entries, markdown=markdown)
 
 @app.route("/print")
 def printit():
     return render_template("print.html", markdown=markdown)
 
 @app.route("/darkprint")
-def printit():
-    return render_template("print.html", markdown=markdown)
+def darkprintit():
+    return render_template("darkprint.html", markdown=markdown)
 
 @app.route("/print_text", methods=["POST"])
 def print_text():

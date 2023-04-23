@@ -2,10 +2,10 @@ FROM python:alpine3.17
 
 WORKDIR /app
 
-COPY . .
-
 RUN mkdir data && \
     pip install flask flask-markdown
+
+COPY . .
 
 ENV FLASK_APP=app.py
 
