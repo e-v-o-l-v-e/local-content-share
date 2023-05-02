@@ -1,7 +1,7 @@
 import os
 import uuid
 import markdown
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response
 
 app = Flask(__name__)
 app.jinja_env.filters["markdown"] = markdown.markdown
@@ -73,7 +73,9 @@ def render_dark_text(filename):
 def view_text(filename):
     with open(os.path.join("data", filename)) as f:
         md = f.read()
-    return "<pre>" + md + "</pre>"
+    resp = make_response(md, 200)
+    resp.mimetype = "text/plain"
+    return resp
 
 @app.route("/delete/<filename>")
 def delete_text(filename):
