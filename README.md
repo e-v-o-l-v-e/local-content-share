@@ -1,6 +1,6 @@
 # Local Content Share
 
-For a better explanation, check out my [blog post](https://blog.tanishq.page/posts/homelab-md-dumpster/) for deploying and using this app in a home lab.
+For a better explanation, check out my [blog post](https://blog.tanishq.page/posts/homelab-local-dumpster/) for deploying and using this app in a home lab.
 
 This application can be used for &rarr;
 
