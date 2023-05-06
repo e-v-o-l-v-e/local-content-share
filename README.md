@@ -1,18 +1,15 @@
 # MD Share & Render
 
-### Usage
+For a better explanation, check out my [blog post](https://blog.tanishq.page/posts/homelab-md-dumpster/) for deploying and using this app in a home lab.
 
-This application can be used for 2 things &rarr;
+This application can be used for &rarr;
 
-- keep a record of pasted markdown text available for copying by any machine in the local network
-- render the markdown text in github-flavor for printing/viewing
+- keep a record of pasted markdown text available for copying by any machine in the local network (also renderable)
+- keep a record of uploaded files available for download by any machine in the local network
+- keep a record of links available for viewing/visiting by any machine in the local network
+- render a given markdown text in github-flavor for printing/viewing
 
-Assuming that the application is deployed at a system with the hostname `galaxy`, the following actions can be taken &rarr;
-
-- Visit `http://galaxy.local` and add markdown text. Entries will be persisted and listed at the bottom with the first line visible and options to view raw, github-flavored render, github-flavored render with dark theme, and delete.
-- Visit `http://galaxy.local/print` to simply paste and render markdown text in github-flavor or visit `http://galaxy.local/darkprint` to render in github-flavor dark mode. 
-
-### Installation
+Assuming that the application is deployed at a system with the hostname `galaxy`, visit `http://galaxy.local` for using the app.
 
 For building and running the docker image, do the following &rarr;
 
@@ -24,5 +21,3 @@ docker run --name md_dumpster --rm -p 80:5000 -d -t local_dumpster
 ```
 
 This will launch it as a daemon container and it would be reachable at port 80 on the host machine.
-
-The recommended method of installation and deployment is via docker. If local installation is needed, refer to the modules installed within the Dockerfile, and install them within a virtual environment before launching the flask app.
