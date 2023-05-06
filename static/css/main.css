@@ -72,28 +72,6 @@ input, select, textarea {
 	appearance: none;
 }
 
-/* static/styles.css */
-.custom-file-upload input[type="file"]::-webkit-file-upload-button {
-    /* For webkit browsers (Chrome, Safari) */
-    background-color: #333; /* Set the desired dark grey color */
-    color: #fff; /* Set the desired text color */
-}
-
-.custom-file-upload input[type="file"]::-moz-file-upload-button {
-    /* For Firefox */
-    background-color: #333; /* Set the desired dark grey color */
-    color: #fff; /* Set the desired text color */
-}
-
-.custom-file-upload input[type="file"]::before {
-    /* For other browsers */
-    content: 'Browse...'; /* Set the desired text */
-    background-color: #333; /* Set the desired dark grey color */
-    color: #fff; /* Set the desired text color */
-    /* ... */
-}
-
-
 /* Basic */
 
 	@-ms-viewport {

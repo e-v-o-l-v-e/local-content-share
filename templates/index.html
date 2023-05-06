@@ -18,9 +18,12 @@
 			<div id="wrapper">
 
 				<!-- Header -->
-					<header id="header" class="alt">
+					<!-- <header id="header" class="alt">
 						<h1>Local Dumpster</h1>
-					</header>
+					</header> -->
+					<div>
+						<br>
+					</div>
 
 				<!-- Main -->
 					<div id="main">
@@ -30,12 +33,17 @@
 								<form method="post" action="{{ url_for('submit_text') }}">
 									<div class="row gtr-uniform">
 										<div class="col-12">
-											<textarea name="demo-message" id="demo-message" placeholder="Enter your message" rows="6"></textarea>
+											<textarea name="demo-message" id="demo-message" placeholder="Enter text" rows="4"></textarea>
 										</div>
 										<div class="col-12">
-											<input type="submit" value="Add to dumpster!" class="primary small" />
+											<input type="submit" value="Add text!" class="primary small" />
 										</div>
 									</div>
+								</form>
+								<form action="{{ url_for('submit_file') }}" method="POST" enctype="multipart/form-data">
+									<span onclick="toggleFileInput()">❯&emsp;</span>
+									<input type="file" name="file" id="file-upload-input" style="display: none;">
+									<input type="submit" value="Add file!" class="primary small">
 								</form>
 							</section>
 
@@ -51,6 +59,39 @@
 								</ul>
 							{% endfor %}
 						</section>
+
+						<section id="second" class="main">
+							{% for filename in files %}
+							<ul class="actions fit small">
+									<li>{{ filename }}</li>
+									<li><a href="{{ url_for('download_file', filename=filename) }}" class="button fit small">Download</a></li>
+									<li><a href="{{ url_for('delete_text', filename=filename) }}" class="button primary fit small" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</a></li>
+								</ul>
+							{% endfor %}
+						</section>
+
+						<section id="first" class="main special">
+							<form method="post" action="{{ url_for('submit_link') }}">
+								<div class="row gtr-uniform">
+									<div class="col-12">
+										<textarea name="demo-message-2" id="demo-message-2" placeholder="Enter link" rows="1"></textarea>
+									</div>
+									<div class="col-12">
+										<input type="submit" value="Add link!" class="primary small" />
+									</div>
+								</div>
+							</form>
+						</section>
+
+						<section id="second" class="main">
+							{% for filename, link in links %}
+							<ul class="actions fit small">
+								<li><a href="{{ link }}">{{ link }}</a></li>
+								<li><a href="{{ url_for('delete_text', filename=filename) }}" class="button fit small">Delete</a></li>
+							</ul>
+							{% endfor %}
+						</section>
+
 					</div>
 
 				<!-- Footer -->
@@ -70,6 +111,16 @@
 			<script src="{{ url_for('static', filename='/js/breakpoints.min.js') }}"></script>
 			<script src="{{ url_for('static', filename='/js/util.js') }}"></script>
 			<script src="{{ url_for('static', filename='/js/main.js') }}"></script>
-
+			<script>
+				// static/script.js
+				function toggleFileInput() {
+					var fileUploadInput = document.getElementById("file-upload-input");
+					if (fileUploadInput.style.display === "none") {
+						fileUploadInput.style.display = "inline";
+					} else {
+						fileUploadInput.style.display = "none";
+					}
+				}
+			</script>
 	</body>
 </html>
