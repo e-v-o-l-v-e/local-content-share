@@ -1,4 +1,4 @@
-# MD Share & Render
+# Local Content Share
 
 For a better explanation, check out my [blog post](https://blog.tanishq.page/posts/homelab-md-dumpster/) for deploying and using this app in a home lab.
 
@@ -14,10 +14,10 @@ Assuming that the application is deployed at a system with the hostname `galaxy`
 For building and running the docker image, do the following &rarr;
 
 ```bash
-git clone https://github.com/tanq16/share-n-render
+git clone https://github.com/tanq16/local-content-share
 cd share-n-render
 docker build -t local_dumpster .
-docker run --name md_dumpster --rm -p 80:5000 -d -t local_dumpster
+docker run --name local_dumpster --rm -p 80:5000 -d -t local_dumpster
 ```
 
 This will launch it as a daemon container and it would be reachable at port 80 on the host machine.
