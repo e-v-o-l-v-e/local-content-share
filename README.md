@@ -11,13 +11,11 @@ This application can be used for &rarr;
 
 Assuming that the application is deployed at a system with the hostname `galaxy`, visit `http://galaxy.local` for using the app.
 
-For building and running the docker image, do the following &rarr;
+For running the docker image, do the following &rarr;
 
 ```bash
-git clone https://github.com/tanq16/local-content-share
-cd share-n-render
-docker build -t local_dumpster .
-docker run --name local_dumpster --rm -p 80:5000 -d -t local_dumpster
+docker run --name local_dumpster --rm -p 80:5000 -d -t tanq16/local_dumpster:main
+# use tage :main_arm for ARM64 image (useful for apple silicon and raspberry pi)
 ```
 
 This will launch it as a daemon container and it would be reachable at port 80 on the host machine.
