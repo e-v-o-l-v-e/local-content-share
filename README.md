@@ -18,4 +18,4 @@ docker run --name local_dumpster --rm -p 80:5000 -d -t tanq16/local_dumpster:mai
 # use tage :main_arm for ARM64 image (useful for apple silicon and raspberry pi)
 ```
 
-This will launch it as a daemon container and it would be reachable at port 80 on the host machine.
+This will launch the container as a daemon and it'll be reachable at port 80 on the host machine.
