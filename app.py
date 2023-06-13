@@ -117,3 +117,8 @@ def view_text(filename):
 def delete_text(filename):
     os.remove(os.path.join("data", filename))
     return redirect(url_for("home"))
+
+@app.route("/count_files")
+def count_files():
+    num_files = len([f for f in os.listdir("data") if not f.startswith("temporary-print")])
+    return str(num_files)

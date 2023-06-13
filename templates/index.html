@@ -87,7 +87,7 @@
 							{% for filename, link in links %}
 							<ul class="actions fit small">
 								<li><a href="{{ link }}">{{ link }}</a></li>
-								<li><a href="{{ url_for('delete_text', filename=filename) }}" class="button fit small">Delete</a></li>
+								<li><a href="{{ url_for('delete_text', filename=filename) }}" class="button primary fit small">Delete</a></li>
 							</ul>
 							{% endfor %}
 						</section>
@@ -121,6 +121,23 @@
 						fileUploadInput.style.display = "none";
 					}
 				}
+			</script>
+			<script>
+				var intervalId = setInterval(checkFileCount, 1000);
+
+				function checkFileCount() {
+					var url = window.location.origin + "/count_files";
+					fetch(url)
+						.then(response => response.text())
+						.then(data => {
+							var fileCount = data;
+							var buttonCount = document.querySelectorAll(".button.primary.fit.small").length.toString();
+							if (fileCount !== buttonCount) {
+								location.reload();
+							}
+						})
+						.catch(error => console.error(error));
+					}
 			</script>
 	</body>
 </html>
