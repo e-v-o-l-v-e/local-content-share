@@ -77,5 +77,23 @@
             </div>
         </main>
     </div>
+    <script>
+        function refreshContent() {
+            fetch(window.location.href)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const newDoc = parser.parseFromString(html, 'text/html');
+                    const currentGrid = document.querySelector('.entries-grid');
+                    const newGrid = newDoc.querySelector('.entries-grid');
+                    if (currentGrid && newGrid && currentGrid.innerHTML !== newGrid.innerHTML) {
+                        currentGrid.innerHTML = newGrid.innerHTML;
+                    }
+                })
+                .catch(error => console.error('Error refreshing content:', error));
+        }
+        // Refresh every 2 seconds
+        setInterval(refreshContent, 2000);
+    </script>
 </body>
 </html>
