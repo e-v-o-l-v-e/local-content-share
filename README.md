@@ -5,14 +5,12 @@ A simple web application for sharing content within your local network. The app 
 - Share and render text content (available for viewing by any machine in the local network)
 - Upload and share files across your local network
 - Access content through a clean, modern interface with dark mode support
-- Auto-render plain text content for easy viewing
 
 ## Features
 
 - Modern, responsive UI with dark mode support
 - File upload functionality
 - Text content sharing
-- Clean link/content management with delete capability
 - Cross-platform support (binaries available for Windows, Linux, and macOS, both AMD64 and ARM64)
 
 ## Quick Start
@@ -72,3 +70,4 @@ go build
 ## Directory Structure
 
 The application creates a `data` directory to store all uploaded files and text content. Make sure the application has write permissions for the directory where it runs.
+
