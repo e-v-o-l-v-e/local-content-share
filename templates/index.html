@@ -3,38 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Content Share</title>
+    <title>Local-Content-Share</title>
     <link rel="stylesheet" href="/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Using Font Awesome for reliable icon rendering -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Content Share</h1>
+            <h1>Local-Content-Share</h1>
         </header>
 
         <main>
             <section class="input-section">
+                <!-- File Upload Form -->
+                <form action="/submit" method="POST" enctype="multipart/form-data" id="fileForm" class="file-upload-form">
+                    <input type="hidden" name="type" value="file">
+                    <label class="btn-icon upload-btn" title="Upload file">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span class="upload-text">Upload</span>
+                        <input 
+                            type="file" 
+                            name="file" 
+                            onChange="document.getElementById('fileForm').submit()"
+                        >
+                    </label>
+                </form>
+
+                <!-- Text Content Form -->
                 <div class="compose-card">
-                    <form action="/submit" method="POST" enctype="multipart/form-data" id="contentForm">
+                    <form action="/submit" method="POST" enctype="multipart/form-data" id="textForm">
                         <input type="hidden" name="type" value="text">
                         <textarea 
                             name="content" 
-                            placeholder="Write something beautiful..." 
+                            placeholder="Add text to share ..." 
                             rows="4"
                         ></textarea>
-                        
                         <div class="actions-wrapper">
-                            <label class="btn-icon btn-secondary" title="Upload file">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <input 
-                                    type="file" 
-                                    name="file" 
-                                    onChange="document.getElementById('contentForm').submit()"
-                                >
-                            </label>
                             <button type="submit" class="btn-icon btn-primary" title="Send">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
