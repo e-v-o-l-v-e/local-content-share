@@ -1,0 +1,239 @@
+/* static/style.css */
+:root {
+    --bg-color: #13111C;          /* Dark background */
+    --card-bg: #1C1A26;           /* Slightly lighter dark for cards */
+    --hover-bg: #252330;          /* Hover state background */
+    --text-color: #E2E1E7;        /* Off-white text */
+    --accent-blue: #A5B4FC;       /* Pastel blue */
+    --accent-purple: #C4B5FD;     /* Pastel purple */
+    --accent-pink: #FDA4AF;       /* Pastel pink */
+    --accent-green: #86EFAC;      /* Pastel green */
+    --border-color: #2D2B38;      /* Subtle border color */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    color: var(--accent-purple);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    background-color: var(--hover-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.input-section {
+    margin-bottom: 2rem;
+}
+
+textarea, input[type="text"] {
+    width: 100%;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+textarea:focus, input[type="text"]:focus {
+    border-color: var(--accent-purple);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(196, 181, 253, 0.1);
+}
+
+button, .button {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+button:hover, .button:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-purple);
+    background-color: var(--hover-bg);
+}
+
+.button.primary {
+    background-color: var(--accent-purple);
+    color: var(--bg-color);
+    border: none;
+}
+
+.button.primary:hover {
+    background-color: var(--accent-blue);
+    color: var(--bg-color);
+}
+
+.button.delete {
+    border-color: var(--accent-pink);
+    color: var(--accent-pink);
+}
+
+.button.delete:hover {
+    background-color: var(--accent-pink);
+    color: var(--bg-color);
+    border-color: var(--accent-pink);
+}
+
+.button.render {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+.button.render:hover {
+    background-color: var(--accent-green);
+    color: var(--bg-color);
+    border-color: var(--accent-green);
+}
+
+.actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.entry {
+    word-break: break-word;
+}
+
+.entry p {
+    margin-bottom: 0.75rem;
+    color: var(--text-color);
+}
+
+.entry a {
+    color: var(--accent-blue);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.entry a:hover {
+    color: var(--accent-purple);
+    text-decoration: underline;
+}
+
+.markdown-output {
+    margin-top: 2rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .actions {
+        gap: 0.5rem;
+    }
+}
+
+/* Markdown styling */
+.markdown-output h1,
+.markdown-output h2,
+.markdown-output h3,
+.markdown-output h4,
+.markdown-output h5,
+.markdown-output h6 {
+    color: var(--accent-purple);
+    margin: 1.5rem 0 1rem;
+}
+
+.markdown-output p {
+    margin-bottom: 1rem;
+}
+
+.markdown-output code {
+    background-color: var(--bg-color);
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9em;
+    color: var(--accent-blue);
+}
+
+.markdown-output pre {
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid var(--border-color);
+}
+
+/* File input styling */
+input[type="file"] {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.75rem;
+    color: var(--text-color);
+    width: 100%;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: var(--hover-bg);
+    border-color: var(--accent-purple);
+}
