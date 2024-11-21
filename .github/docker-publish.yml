@@ -1,0 +1,20 @@
+name: Docker Image Publish
+
+on:
+    push:
+      branches: [ mainnono ]
+
+permissions:
+    contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to GitHub Container Registry
+        run: echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u tanq16 --password-stdin
+      - name: Build Docker Image
+        run: docker build -t ghcr.io/${{ github.repository }}:latest .
+      - name: Push Docker Image
+        run: docker push ghcr.io/${{ github.repository }}:latest

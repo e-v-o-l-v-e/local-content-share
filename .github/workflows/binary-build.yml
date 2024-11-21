@@ -1,0 +1,62 @@
+name: Release Binaries
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release-init:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create Release
+        run: |
+          gh release create "latest" \
+            --title "Latest Release" \
+            --draft \
+            --notes "Release binary with latest modifications." \
+            --target ${{ github.sha }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [linux, windows, darwin]
+        arch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Build Binary
+        run: |
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
+
+      - name: Upload Release Asset
+        run: |
+          gh release upload "latest" \
+            "local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish Release
+        run: |
+          gh release edit "latest" --draft=false
+        env:
+          GH_TOKEN: ${{ github.token }}
