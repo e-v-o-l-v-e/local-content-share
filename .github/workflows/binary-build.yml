@@ -9,22 +9,6 @@ permissions:
   packages: write
 
 jobs:
-  release-init:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Create Release
-        run: |
-          gh release create "latest" \
-            --title "Latest Release" \
-            --draft \
-            --notes "Release binary with latest modifications." \
-            --target ${{ github.sha }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -39,6 +23,23 @@ jobs:
         with:
           go-version: '1.23'
 
+      - name: Delete existing release if present
+        continue-on-error: true
+        run: |
+          gh release delete "latest" -y
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Create Release
+        if: matrix.os == 'linux' && matrix.arch == 'amd64'
+        run: |
+          gh release create "latest" \
+            --title "Latest Release" \
+            --notes "Release binary with latest modifications." \
+            --target ${{ github.sha }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Build Binary
         run: |
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
@@ -46,17 +47,6 @@ jobs:
       - name: Upload Release Asset
         run: |
           gh release upload "latest" \
-            "local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}"
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Publish Release
-        run: |
-          gh release edit "latest" --draft=false
+            "local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}" --clobber
         env:
           GH_TOKEN: ${{ github.token }}

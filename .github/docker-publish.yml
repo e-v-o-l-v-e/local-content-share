@@ -1,20 +1,24 @@
 name: Docker Image Publish
 
 on:
-    push:
-      branches: [ mainnono ]
-
-permissions:
-    contents: write
+  push:
+    branches: [ main ]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Login to GitHub Container Registry
-        run: echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u tanq16 --password-stdin
-      - name: Build Docker Image
-        run: docker build -t ghcr.io/${{ github.repository }}:latest .
-      - name: Push Docker Image
-        run: docker push ghcr.io/${{ github.repository }}:latest
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: tanq16
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: tanq16/local-content-share:main
