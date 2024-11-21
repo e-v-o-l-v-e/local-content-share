@@ -1,8 +1,8 @@
-// main.go
 package main
 
 import (
 	"embed"
+	"fmt"
 	"html/template"
 	"io"
 	"log"
@@ -10,9 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/gomarkdown/markdown"
-	"github.com/google/uuid"
+	"time"
 )
 
 //go:embed templates/* static/*
@@ -81,7 +79,6 @@ func main() {
 		}
 
 		entryType := r.FormValue("type")
-		id := uuid.New().String()
 
 		switch entryType {
 		case "text":
@@ -90,7 +87,10 @@ func main() {
 				http.Redirect(w, r, "/", http.StatusSeeOther)
 				return
 			}
-			err := os.WriteFile(filepath.Join("data", id), []byte(content), 0644)
+			// Generate timestamp-based filename
+			timestamp := time.Now().Format("2006-01-02_15-04-05")
+			filename := fmt.Sprintf("text-%s", timestamp)
+			err := os.WriteFile(filepath.Join("data", filename), []byte(content), 0644)
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
@@ -120,33 +120,15 @@ func main() {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
-	http.HandleFunc("/render/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			id := strings.TrimPrefix(r.URL.Path, "/render/")
-			if id != "" {
-				content, err := os.ReadFile(filepath.Join("data", id))
-				if err != nil {
-					http.Error(w, "File not found", 404)
-					return
-				}
-				html := markdown.ToHTML(content, nil, nil)
-				tmpl.ExecuteTemplate(w, "render.html", template.HTML(html))
-				return
-			}
-		}
-
-		if r.Method == http.MethodPost {
-			content := r.FormValue("content")
-			if content == "" {
-				http.Redirect(w, r, "/", http.StatusSeeOther)
-				return
-			}
-			html := markdown.ToHTML([]byte(content), nil, nil)
-			tmpl.ExecuteTemplate(w, "render.html", template.HTML(html))
+	http.HandleFunc("/show/", func(w http.ResponseWriter, r *http.Request) {
+		id := strings.TrimPrefix(r.URL.Path, "/show/")
+		content, err := os.ReadFile(filepath.Join("data", id))
+		if err != nil {
+			http.Error(w, "File not found", 404)
 			return
 		}
-
-		tmpl.ExecuteTemplate(w, "render.html", nil)
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write(content)
 	})
 
 	http.HandleFunc("/download/", func(w http.ResponseWriter, r *http.Request) {

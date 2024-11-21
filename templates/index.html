@@ -1,56 +1,75 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local Dumpster</title>
+    <title>Content Share</title>
     <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Using Font Awesome for reliable icon rendering -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Local Dumpster</h1>
+            <h1>Content Share</h1>
         </header>
 
         <main>
             <section class="input-section">
-                <div class="card">
-                    <form action="/submit" method="POST" enctype="multipart/form-data">
+                <div class="compose-card">
+                    <form action="/submit" method="POST" enctype="multipart/form-data" id="contentForm">
                         <input type="hidden" name="type" value="text">
-                        <textarea name="content" placeholder="Enter text..." rows="4"></textarea>
-                        <button type="submit" class="button primary">Add Text</button>
-                    </form>
-                </div>
-
-                <div class="card">
-                    <form action="/submit" method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="type" value="file">
-                        <input type="file" name="file" id="file">
-                        <button type="submit" class="button primary">Upload File</button>
+                        <textarea 
+                            name="content" 
+                            placeholder="Write something beautiful..." 
+                            rows="4"
+                        ></textarea>
+                        
+                        <div class="actions-wrapper">
+                            <label class="btn-icon btn-secondary" title="Upload file">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <input 
+                                    type="file" 
+                                    name="file" 
+                                    onChange="document.getElementById('contentForm').submit()"
+                                >
+                            </label>
+                            <button type="submit" class="btn-icon btn-primary" title="Send">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </section>
 
-            <section class="entries-section">
+            <div class="entries-grid">
                 {{range .}}
-                    <div class="entry card">
-                        {{if eq .Type "text"}}
-                            <p>{{.Content}}</p>
-                            <div class="actions">
-                                <a href="/render/{{.ID}}" class="button render">Render</a>
-                                <a href="/delete/{{.ID}}" class="button delete">Delete</a>
-                            </div>
-                        {{else}}
-                            <p>{{.Filename}}</p>
-                            <div class="actions">
-                                <a href="/download/file-{{.Filename}}" class="button">Download</a>
-                                <a href="/delete/file-{{.Filename}}" class="button delete">Delete</a>
-                            </div>
-                        {{end}}
-                    </div>
+                <div class="entry-card">
+                    {{if eq .Type "text"}}
+                        <div class="entry-content">{{.ID}}</div>
+                        <div class="entry-actions">
+                            <a href="/show/{{.ID}}" class="btn-icon" title="Show">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="/delete/{{.ID}}" class="btn-icon" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    {{else}}
+                        <div class="entry-content">{{.Filename}}</div>
+                        <div class="entry-actions">
+                            <a href="/download/file-{{.Filename}}" class="btn-icon" title="Download">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            <a href="/delete/file-{{.Filename}}" class="btn-icon" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    {{end}}
+                </div>
                 {{end}}
-            </section>
+            </div>
         </main>
     </div>
 </body>
