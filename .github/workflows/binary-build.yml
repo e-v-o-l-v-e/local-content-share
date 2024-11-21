@@ -1,4 +1,4 @@
-name: Release Binaries
+name: Release Binary
 
 on:
   push:
@@ -9,7 +9,45 @@ permissions:
   packages: write
 
 jobs:
+  check-commit:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.new_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Version
+        id: version
+        run: |
+          # Get the latest version tag, default to v0.1 if none exists
+          LATEST_TAG=$(gh release list -L 1 | cut -f 1 | sed 's/Release //' || echo "v0")
+          LATEST_TAG=${LATEST_TAG:-v0}
+          
+          # Extract current version numbers
+          VERSION=$(echo $LATEST_TAG | sed 's/v//')
+          
+          NEW_VERSION="v$((VERSION + 1))"
+          
+          echo "Previous version: $LATEST_TAG"
+          echo "New version: $NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Create Release
+        run: |
+          gh release create "${{ steps.version.outputs.new_version }}" \
+            --title "Release ${{ steps.version.outputs.new_version }}" \
+            --draft \
+            --notes "Release ${{ steps.version.outputs.new_version }}" \
+            --target ${{ github.sha }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+
   build:
+    needs: check-commit
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,30 +61,25 @@ jobs:
         with:
           go-version: '1.23'
 
-      - name: Delete existing release if present
-        continue-on-error: true
-        run: |
-          gh release delete "latest" -y
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-      - name: Create Release
-        if: matrix.os == 'linux' && matrix.arch == 'amd64'
-        run: |
-          gh release create "latest" \
-            --title "Latest Release" \
-            --notes "Release binary with latest modifications." \
-            --target ${{ github.sha }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-
       - name: Build Binary
         run: |
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
 
       - name: Upload Release Asset
         run: |
-          gh release upload "latest" \
-            "local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}" --clobber
+          gh release upload "${{ needs.check-commit.outputs.version }}" \
+            "local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  publish:
+    needs: [check-commit, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish Release
+        run: |
+          gh release edit "${{ needs.check-commit.outputs.version }}" --draft=false
         env:
           GH_TOKEN: ${{ github.token }}
