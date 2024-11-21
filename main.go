@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -27,12 +28,9 @@ type Entry struct {
 }
 
 func main() {
-	// Create data directory if it doesn't exist
 	if err := os.MkdirAll("data", 0755); err != nil {
 		log.Fatal(err)
 	}
-
-	// Parse templates
 	tmpl := template.Must(template.ParseFS(content, "templates/*.html"))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -42,17 +40,11 @@ func main() {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-
 		for _, file := range files {
-			if file.Name() == "temporary-print" {
-				continue
-			}
-
 			data, err := os.ReadFile(filepath.Join("data", file.Name()))
 			if err != nil {
 				continue
 			}
-
 			entry := Entry{ID: file.Name()}
 			if strings.HasPrefix(file.Name(), "file-") {
 				entry.Type = "file"
@@ -63,23 +55,18 @@ func main() {
 			}
 			entries = append(entries, entry)
 		}
-
 		tmpl.ExecuteTemplate(w, "index.html", entries)
 	})
-
 	http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
 		w.Write(styleCSS)
 	})
-
 	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseMultipartForm(32 << 20); err != nil {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-
 		entryType := r.FormValue("type")
-
 		switch entryType {
 		case "text":
 			content := r.FormValue("content")
@@ -88,35 +75,33 @@ func main() {
 				return
 			}
 			// Generate timestamp-based filename
-			timestamp := time.Now().Format("2006-01-02_15-04-05")
+			timestamp := time.Now().Format("2006-01-02-15-04-05")
 			filename := fmt.Sprintf("text-%s", timestamp)
 			err := os.WriteFile(filepath.Join("data", filename), []byte(content), 0644)
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
 			}
-
 		case "file":
 			file, header, err := r.FormFile("file")
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
 			}
+			// 4 random characters
+			randChars := fmt.Sprintf("%04d", rand.Intn(10000))
 			defer file.Close()
-
-			f, err := os.Create(filepath.Join("data", "file-"+header.Filename))
+			f, err := os.Create(filepath.Join("data", "file-"+randChars+"-"+header.Filename))
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
 			}
 			defer f.Close()
-
 			if _, err := io.Copy(f, file); err != nil {
 				http.Error(w, err.Error(), 500)
 				return
 			}
 		}
-
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
