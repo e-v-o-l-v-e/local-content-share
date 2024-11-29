@@ -11,7 +11,7 @@ RUN curl -sL $(curl -s https://api.github.com/repos/tanq16/local-content-share/r
     chmod +x local-content-share
 
 # Create data directory for persistent storage
-RUN mkdir data
+RUN mkdir -p data
 
 # Expose the port the app runs on
 EXPOSE 8080

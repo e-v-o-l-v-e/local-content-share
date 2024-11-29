@@ -1,10 +1,31 @@
 # Local Content Share
 
+<div align="center">
+  <img src="assets/logo.png" alt="Local Content Share Logo" width="200">
+
+  [![Release Binary](https://github.com/tanq16/local-content-share/actions/workflows/binary-build.yml/badge.svg)](https://github.com/tanq16/local-content-share/actions/workflows/binary-build.yml)
+  [![Docker Image Publish](https://github.com/tanq16/local-content-share/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/tanq16/local-content-share/actions/workflows/docker-publish.yml)
+</div>
+
 A simple web application for sharing content within your local network. The app allows you to:
 
 - Share and render text content (available for viewing by any machine in the local network)
 - Upload and share files across your local network
 - Access content through a clean, modern interface with dark mode support
+
+## Screenshots
+
+<div align="center">
+  <h3>Desktop View</h3>
+  <img src="assets/desktop-light.png" alt="Desktop Light Mode" width="600">
+  <img src="assets/desktop-dark.png" alt="Desktop Dark Mode" width="600">
+  
+  <h3>Mobile View</h3>
+  <p float="left">
+    <img src="assets/mobile-light.png" alt="Mobile Light Mode" width="300">
+    <img src="assets/mobile-dark.png" alt="Mobile Dark Mode" width="300">
+  </p>
+</div>
 
 ## Features
 
@@ -70,4 +91,3 @@ go build
 ## Directory Structure
 
 The application creates a `data` directory to store all uploaded files and text content. Make sure the application has write permissions for the directory where it runs.
-

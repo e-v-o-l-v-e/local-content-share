@@ -20,6 +20,9 @@ var content embed.FS
 //go:embed static/style.css
 var styleCSS []byte
 
+//go:embed static/favicon.ico
+var faviconICO []byte
+
 type Entry struct {
 	ID       string
 	Content  string
@@ -57,10 +60,18 @@ func main() {
 		}
 		tmpl.ExecuteTemplate(w, "index.html", entries)
 	})
+
 	http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
 		w.Write(styleCSS)
 	})
+
+	// Add favicon handler
+	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/x-icon")
+		w.Write(faviconICO)
+	})
+
 	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseMultipartForm(32 << 20); err != nil {
 			http.Error(w, err.Error(), 500)
