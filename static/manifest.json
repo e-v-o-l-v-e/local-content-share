@@ -1,0 +1,21 @@
+{
+    "name": "Local Content Share",
+    "short_name": "ContentShare",
+    "description": "Share content within your local network",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#FAFAFA",
+    "theme_color": "#7C3AED",
+    "icons": [
+        {
+            "src": "/api/placeholder/192/192",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/api/placeholder/512/512",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

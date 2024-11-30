@@ -23,6 +23,12 @@ var styleCSS []byte
 //go:embed static/favicon.ico
 var faviconICO []byte
 
+//go:embed static/manifest.json
+var manifestJSON []byte
+
+//go:embed static/sw.js
+var serviceWorkerJS []byte
+
 type Entry struct {
 	ID       string
 	Content  string
@@ -66,10 +72,19 @@ func main() {
 		w.Write(styleCSS)
 	})
 
-	// Add favicon handler
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/x-icon")
 		w.Write(faviconICO)
+	})
+
+	http.HandleFunc("/manifest.json", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(manifestJSON)
+	})
+
+	http.HandleFunc("/sw.js", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/javascript")
+		w.Write(serviceWorkerJS)
 	})
 
 	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
