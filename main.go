@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-//go:embed templates/* static/*
+//go:embed templates/*
 var content embed.FS
 
 //go:embed static/style.css
@@ -28,6 +28,12 @@ var manifestJSON []byte
 
 //go:embed static/sw.js
 var serviceWorkerJS []byte
+
+//go:embed static/icon-192.png
+var icon192PNG []byte
+
+//go:embed static/icon-512.png
+var icon512PNG []byte
 
 type Entry struct {
 	ID       string
@@ -85,6 +91,16 @@ func main() {
 	http.HandleFunc("/sw.js", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/javascript")
 		w.Write(serviceWorkerJS)
+	})
+
+	http.HandleFunc("/icon-192.png", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/png")
+		w.Write(icon192PNG)
+	})
+
+	http.HandleFunc("/icon-512.png", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/png")
+		w.Write(icon512PNG)
 	})
 
 	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
