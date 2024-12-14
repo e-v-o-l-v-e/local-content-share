@@ -13,6 +13,7 @@ A simple web application for sharing content (files and text) within your local 
 - Upload files and make them available across your local network
 - Access content through a clean and modern interface with dark mode support that maintains its good looks even on mobile aspect ratio
 - Pure HTTP API and no use of websockets, which means no external communications (like for TURN) needed
+- It can also be installed as a PWA (so it shows as an icon in a mobile home screens)
 
 > [!NOTE]
 > This application is meant to be deployed within your homelab only. There is no authentication mechanism here.
