@@ -1,4 +1,4 @@
-name: Release Binary
+name: Build Binary
 
 on:
   push:
@@ -41,7 +41,7 @@ jobs:
           gh release create "${{ steps.version.outputs.new_version }}" \
             --title "Release ${{ steps.version.outputs.new_version }}" \
             --draft \
-            --notes "Release ${{ steps.version.outputs.new_version }}" \
+            --notes "Local Content Share latest release binaries." \
             --target ${{ github.sha }}
         env:
           GH_TOKEN: ${{ github.token }}
