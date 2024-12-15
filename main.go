@@ -147,6 +147,28 @@ func main() {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
+	http.HandleFunc("/rename/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		oldName := strings.TrimPrefix(r.URL.Path, "/rename/")
+		newName := r.FormValue("newname")
+		if newName == "" {
+			http.Error(w, "New name cannot be empty", http.StatusBadRequest)
+			return
+		}
+		err := os.Rename(
+			filepath.Join("data", oldName),
+			filepath.Join("data", newName),
+		)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
+
 	http.HandleFunc("/show/", func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimPrefix(r.URL.Path, "/show/")
 		content, err := os.ReadFile(filepath.Join("data", id))
