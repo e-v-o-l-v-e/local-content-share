@@ -30,6 +30,24 @@
                     });
             });
         }
+        
+        function showRenamePrompt(id) {
+            const newName = prompt('Enter new name:');
+            if (newName) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/rename/${id}`;
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'newname';
+                input.value = newName;
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
     </script>
 </head>
 <body>
@@ -78,6 +96,9 @@
                     {{if eq .Type "text"}}
                         <div class="entry-content">{{.ID}}</div>
                         <div class="entry-actions">
+                            <button onclick="showRenamePrompt('{{.ID}}')" class="btn-icon" title="Rename">
+                                <i class="fas fa-pencil"></i>
+                            </button>
                             <a href="/show/{{.ID}}" class="btn-icon" title="Show">
                                 <i class="fas fa-eye"></i>
                             </a>
