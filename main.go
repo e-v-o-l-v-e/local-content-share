@@ -39,7 +39,7 @@ type Entry struct {
 	ID       string
 	Content  string
 	Type     string // "text" or "file"
-	Filename string // Only used for files
+	Filename string
 }
 
 func generateUniqueFilename(baseDir, baseName string) string {
@@ -47,10 +47,13 @@ func generateUniqueFilename(baseDir, baseName string) string {
 	if _, err := os.Stat(filepath.Join(baseDir, baseName)); os.IsNotExist(err) {
 		return baseName
 	}
+	// Get prefix (file or text with - separator)
+	prefix := baseName[:5]
+	unprefixedName := baseName[5:]
 	// If file exists, add random prefix until we find a unique name
 	for {
 		randChars := fmt.Sprintf("%04d", rand.Intn(10000))
-		newName := fmt.Sprintf("%s-%s", randChars, baseName)
+		newName := fmt.Sprintf("%s%s-%s", prefix, randChars, unprefixedName)
 		if _, err := os.Stat(filepath.Join(baseDir, newName)); os.IsNotExist(err) {
 			return newName
 		}
@@ -82,6 +85,7 @@ func main() {
 			} else {
 				entry.Type = "text"
 				entry.Content = string(data)
+				entry.Filename = strings.TrimPrefix(file.Name(), "text-")
 			}
 			entries = append(entries, entry)
 		}
@@ -147,7 +151,7 @@ func main() {
 			}
 			defer file.Close()
 			// Generate unique filename
-			fileName := generateUniqueFilename("data", header.Filename)
+			fileName := generateUniqueFilename("data", "file-"+header.Filename)
 			f, err := os.Create(filepath.Join("data", fileName))
 			if err != nil {
 				http.Error(w, err.Error(), 500)
@@ -172,6 +176,10 @@ func main() {
 		if newName == "" {
 			http.Error(w, "New name cannot be empty", http.StatusBadRequest)
 			return
+		}
+		// Add prefix from old name if not present
+		if !strings.HasPrefix(newName, "text-") && !strings.HasPrefix(newName, "file-") {
+			newName = oldName[:5] + newName
 		}
 		// Generate unique filename
 		newName = generateUniqueFilename("data", newName)

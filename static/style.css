@@ -169,6 +169,11 @@ textarea::placeholder {
     background: var(--gray-100);
 }
 
+.drag-over {
+    border: 2px dashed var(--primary);
+    background: var(--primary-light);
+}
+
 .entries-grid {
     display: grid;
     gap: 1.5rem;

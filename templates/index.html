@@ -73,7 +73,14 @@
                 </form>
 
                 <!-- Text Content Form -->
-                <div class="compose-card">
+                <div
+                    class="compose-card"
+                    id="dropZone"
+                    ondragover="handleDragOver(event)"
+                    ondrop="handleDrop(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondragenter="handleDragEnter(event)"
+                >
                     <form action="/submit" method="POST" enctype="multipart/form-data" id="textForm">
                         <input type="hidden" name="type" value="text">
                         <textarea 
@@ -94,7 +101,7 @@
                 {{range .}}
                 <div class="entry-card">
                     {{if eq .Type "text"}}
-                        <div class="entry-content">{{.ID}}</div>
+                        <div class="entry-content">{{.Filename}}</div>
                         <div class="entry-actions">
                             <button onclick="showRenamePrompt('{{.ID}}')" class="btn-icon" title="Rename">
                                 <i class="fas fa-pencil"></i>
@@ -109,10 +116,10 @@
                     {{else}}
                         <div class="entry-content">{{.Filename}}</div>
                         <div class="entry-actions">
-                            <a href="/download/file-{{.Filename}}" class="btn-icon" title="Download">
+                            <a href="/download/{{.ID}}" class="btn-icon" title="Download">
                                 <i class="fas fa-download"></i>
                             </a>
-                            <a href="/delete/file-{{.Filename}}" class="btn-icon" title="Delete">
+                            <a href="/delete/{{.ID}}" class="btn-icon" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </div>
@@ -122,6 +129,40 @@
             </div>
         </main>
     </div>
+    <script>
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('dropZone').classList.add('drag-over');
+        }
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('dropZone').classList.remove('drag-over');
+        }
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.getElementById('dropZone').classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const formData = new FormData();
+                formData.append('type', 'file');
+                formData.append('file', files[0]);
+                fetch('/submit', {
+                    method: 'POST',
+                    body: formData
+                }).then(() => {
+                    // Refresh the page to show the new file
+                    window.location.reload();
+                });
+            }
+        }
+    </script>
     <script>
         function refreshContent() {
             fetch(window.location.href)
