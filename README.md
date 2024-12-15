@@ -53,7 +53,7 @@ services:
 ```
 
 > [!WARNING]
-> The public image built via GitHub actions only builds an x86-64 image. If you need an ARM variant, just run `docker build -t lcshare .` after cloning the repo.
+> The public image built via GitHub actions only builds an x86-64 image. If you need an ARM variant, just run `docker build -t lcshare:local .` after cloning the repo. Then for the image use `lcshare:local` instead of the tag mentioned above.
 
 ### Using Binary
 
@@ -85,9 +85,14 @@ go build .
 - To share text content:
    - Type or paste your text in the text area
    - Click the send button (like the telegram arrow)
+   - It will set a timestamp-based file name
+- To rename files (text items only):
+   - Click the pencil icon and provide the new name
+   - It will automatically append 4 random digits if your input isn't unique
 - To share files:
    - Click the upload button
    - Select your file
+   - It will automatically append 4 random digits if filename isn't unique
 - To view/download content:
    - Text content: click the eye icon (shows raw text)
    - Files: click the download icon

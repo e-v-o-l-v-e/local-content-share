@@ -42,6 +42,21 @@ type Entry struct {
 	Filename string // Only used for files
 }
 
+func generateUniqueFilename(baseDir, baseName string) string {
+	// First try without random prefix
+	if _, err := os.Stat(filepath.Join(baseDir, baseName)); os.IsNotExist(err) {
+		return baseName
+	}
+	// If file exists, add random prefix until we find a unique name
+	for {
+		randChars := fmt.Sprintf("%04d", rand.Intn(10000))
+		newName := fmt.Sprintf("%s-%s", randChars, baseName)
+		if _, err := os.Stat(filepath.Join(baseDir, newName)); os.IsNotExist(err) {
+			return newName
+		}
+	}
+}
+
 func main() {
 	if err := os.MkdirAll("data", 0755); err != nil {
 		log.Fatal(err)
@@ -130,10 +145,10 @@ func main() {
 				http.Error(w, err.Error(), 500)
 				return
 			}
-			// 4 random characters
-			randChars := fmt.Sprintf("%04d", rand.Intn(10000))
 			defer file.Close()
-			f, err := os.Create(filepath.Join("data", "file-"+randChars+"-"+header.Filename))
+			// Generate unique filename
+			fileName := generateUniqueFilename("data", header.Filename)
+			f, err := os.Create(filepath.Join("data", fileName))
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
@@ -158,6 +173,10 @@ func main() {
 			http.Error(w, "New name cannot be empty", http.StatusBadRequest)
 			return
 		}
+		// Generate unique filename
+		newName = generateUniqueFilename("data", newName)
+
+		// Rename the file
 		err := os.Rename(
 			filepath.Join("data", oldName),
 			filepath.Join("data", newName),
