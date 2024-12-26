@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local-Content-Share</title>
     <link rel="stylesheet" href="/style.css">
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -16,6 +16,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ContentShare">
+    <meta name="format-detection" content="telephone=no">
 
     <!-- PWA Script -->
     <script>
@@ -118,6 +119,9 @@
                         <div class="entry-actions">
                             <a href="/download/{{.ID}}" class="btn-icon" title="Download">
                                 <i class="fas fa-download"></i>
+                            </a>
+                            <a href="/view/{{.ID}}" class="btn-icon" title="View">
+                                <i class="fas fa-eye"></i>
                             </a>
                             <a href="/delete/{{.ID}}" class="btn-icon" title="Delete">
                                 <i class="fas fa-trash"></i>

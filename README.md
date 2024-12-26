@@ -1,22 +1,22 @@
-# Local Content Share
-
 <div align="center">
-  <img src="assets/logo.png" alt="Local Content Share Logo" width="200"><br>
+  <img src="assets/logo.png" alt="Local Content Share Logo" width="200">
+  <h1>Local Content Share</h1>
 
   <a href="https://github.com/tanq16/local-content-share/actions/workflows/binary-build.yml"><img alt="Build Workflow" src="https://github.com/tanq16/local-content-share/actions/workflows/binary-build.yml/badge.svg"></a>&nbsp;<a href="https://github.com/tanq16/local-content-share/actions/workflows/docker-publish.yml"><img alt="Container Workflow" src="https://github.com/tanq16/local-content-share/actions/workflows/docker-publish.yml/badge.svg"></a><br>
-  <a href="https://github.com/Tanq16/local-content-share/releases"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/tanq16/local-content-share"></a>&nbsp;<a href="https://hub.docker.com/r/tanq16/local-content-share"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/tanq16/local-content-share"></a><br>
+  <a href="https://github.com/Tanq16/local-content-share/releases"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/tanq16/local-content-share"></a>&nbsp;<a href="https://hub.docker.com/r/tanq16/local-content-share"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/tanq16/local-content-share"></a><br><br>
+  <a href="#screenshots">Screenshots</a> &bull; <a href="#installation-and-usage">Install & Use</a> &bull; <a href="#tips-and-notes">Tips & Notes</a> &bull; <a href="#screenshots">Screenshots</a>
 </div>
 
 A simple web application for sharing content (files and text) within your local network across any device. The app can be launched via its binary or as a container. The primary features are:
 
-- Make arbitrary text content available for viewing on any machine/smartphone in the local network
-- Upload files and make them available across your local network
-- Access content through a clean and modern interface with dark mode support that maintains its good looks even on mobile aspect ratio
-- Pure HTTP API and no use of websockets, which means no external communications (like for TURN) needed
-- It can also be installed as a PWA (so it shows as an icon in a mobile home screens)
+- Make arbitrary text content available to view/share on any device in the local network
+- Upload files and make them available to view/download on any device in the local network
+- Access content through a clean, modern interface with dark mode support that maintains its good looks even on mobile
+- Pure HTTP API, i.e., *no use of websockets* - this is good as it means *no external communications* (like for TURN with websockets)
+- It can also be installed as a PWA (so it shows as an icon in mobile home screens)
 
 > [!NOTE]
-> This application is meant to be deployed within your homelab only. There is no authentication mechanism here.
+> This application is meant to be deployed within your homelab only. There is no authentication mechanism implemented.
 
 ## Screenshots
 
@@ -25,7 +25,7 @@ A simple web application for sharing content (files and text) within your local 
 | Light | <img src="assets/desktop-light.png" alt="Desktop Light Mode"> | <img src="assets/mobile-light.png" alt="Mobile Light Mode"> |
 | Dark | <img src="assets/desktop-dark.png" alt="Desktop Dark Mode"> | <img src="assets/mobile-dark.png" alt="Mobile Dark Mode"> |
 
-## Usage
+## Installation and Usage
 
 ### Using Docker
 
@@ -69,36 +69,42 @@ services:
 
 The application will be available at `http://localhost:8080`
 
-## Building Binary from Source
+### Using Go
 
-Requirements: `Go 1.23` or later
+With `Go 1.23+` installed, run the following to download the binary to your GOBIN:
+
+```bash
+go install github.com/tanq16/local-content-share@latest
+```
+
+Or, you can build from source like so:
 
 ```bash
 git clone https://github.com/tanq16/local-content-share.git
 cd local-content-share
 go build .
-./local-content-share
+./local-content-share # to run the tool
 ```
 
-## Interface Tips
+## Tips and Notes
 
 - To share text content:
    - Type or paste your text in the text area
    - Click the send button (like the telegram arrow)
    - It will set a timestamp-based file name
-- To rename files (text items only):
+- To rename files (text snippets only):
    - Click the pencil icon and provide the new name
    - It will automatically append 4 random digits if your input isn't unique
 - To share files:
    - Click the upload button
    - Select your file
    - It will automatically append 4 random digits if filename isn't unique
-- To view/download content:
-   - Text content: click the eye icon (shows raw text)
-   - Files: click the download icon
-- To delete content:
-   - Click the trash icon next to the item box
+- To view content, click the eye icon:
+   - Text content: shows raw text
+   - Files: shows raw text, images, PDFs, etc. (basically files that browsers can view)
+- To download files, click the download icon
+- To delete content, click the trash icon
 
-## Directory Structure
+A quick note of the data structure:
 
-The application creates a `data` directory to store all uploaded files and text content. Make sure the application has write permissions for the directory where it runs.
+The application creates a `data` directory to store all uploaded files and text content (both in `files` and `text` subfolders respectively). Make sure the application has write permissions for the directory where it runs.
