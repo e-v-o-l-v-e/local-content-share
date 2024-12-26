@@ -38,7 +38,7 @@ var icon512PNG []byte
 type Entry struct {
 	ID       string
 	Content  string
-	Type     string // "text" or "file"
+	Type     string
 	Filename string
 }
 
@@ -47,20 +47,58 @@ func generateUniqueFilename(baseDir, baseName string) string {
 	if _, err := os.Stat(filepath.Join(baseDir, baseName)); os.IsNotExist(err) {
 		return baseName
 	}
-	// Get prefix (file or text with - separator)
-	prefix := baseName[:5]
-	unprefixedName := baseName[5:]
 	// If file exists, add random prefix until we find a unique name
 	for {
 		randChars := fmt.Sprintf("%04d", rand.Intn(10000))
-		newName := fmt.Sprintf("%s%s-%s", prefix, randChars, unprefixedName)
+		newName := fmt.Sprintf("%s-%s", randChars, baseName)
 		if _, err := os.Stat(filepath.Join(baseDir, newName)); os.IsNotExist(err) {
 			return newName
 		}
 	}
 }
 
+// migrateExistingContent moves existing files to the new directory structure
+// ONLY REQUIRED FOR MIGRATING FROM THE ORIGINAL VERSION
+// TODO: Remove this function in future versions
+func migrateExistingContent() error {
+	if err := os.MkdirAll(filepath.Join("data", "text"), 0755); err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Join("data", "files"), 0755); err != nil {
+		return err
+	}
+	// Check for existing files
+	files, err := os.ReadDir("data")
+	if err != nil {
+		return err
+	}
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		name := file.Name()
+		oldPath := filepath.Join("data", name)
+		var newPath string
+		if strings.HasPrefix(name, "text-") {
+			newPath = filepath.Join("data", "text", strings.TrimPrefix(name, "text-"))
+		} else if strings.HasPrefix(name, "file-") {
+			newPath = filepath.Join("data", "files", strings.TrimPrefix(name, "file-"))
+		} else {
+			// If there isn't a match, don't do anything
+			// This shouldn't happen though, given the implementation
+			continue
+		}
+		if err := os.Rename(oldPath, newPath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func main() {
+	if err := migrateExistingContent(); err != nil {
+		log.Printf("Migration error: %v", err)
+	}
 	if err := os.MkdirAll("data", 0755); err != nil {
 		log.Fatal(err)
 	}
@@ -68,26 +106,32 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		entries := []Entry{}
-		files, err := os.ReadDir("data")
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
-		for _, file := range files {
-			data, err := os.ReadFile(filepath.Join("data", file.Name()))
+		textFiles, _ := os.ReadDir(filepath.Join("data", "text"))
+		for _, file := range textFiles {
+			if file.IsDir() {
+				continue
+			}
+			data, err := os.ReadFile(filepath.Join("data", "text", file.Name()))
 			if err != nil {
 				continue
 			}
-			entry := Entry{ID: file.Name()}
-			if strings.HasPrefix(file.Name(), "file-") {
-				entry.Type = "file"
-				entry.Filename = strings.TrimPrefix(file.Name(), "file-")
-			} else {
-				entry.Type = "text"
-				entry.Content = string(data)
-				entry.Filename = strings.TrimPrefix(file.Name(), "text-")
+			entries = append(entries, Entry{
+				ID:       filepath.Join("text", file.Name()),
+				Type:     "text",
+				Content:  string(data),
+				Filename: file.Name(),
+			})
+		}
+		files, _ := os.ReadDir(filepath.Join("data", "files"))
+		for _, file := range files {
+			if file.IsDir() {
+				continue
 			}
-			entries = append(entries, entry)
+			entries = append(entries, Entry{
+				ID:       filepath.Join("files", file.Name()),
+				Type:     "file",
+				Filename: file.Name(),
+			})
 		}
 		tmpl.ExecuteTemplate(w, "index.html", entries)
 	})
@@ -123,7 +167,7 @@ func main() {
 	})
 
 	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
-		if err := r.ParseMultipartForm(32 << 20); err != nil {
+		if err := r.ParseMultipartForm(2 << 28); err != nil { // 256 MB
 			http.Error(w, err.Error(), 500)
 			return
 		}
@@ -135,10 +179,8 @@ func main() {
 				http.Redirect(w, r, "/", http.StatusSeeOther)
 				return
 			}
-			// Generate timestamp-based filename
-			timestamp := time.Now().Format("2006-01-02-15-04-05")
-			filename := fmt.Sprintf("text-%s", timestamp)
-			err := os.WriteFile(filepath.Join("data", filename), []byte(content), 0644)
+			timestamp := time.Now().Format("Jan-02-15-04-05")
+			err := os.WriteFile(filepath.Join("data/text", timestamp), []byte(content), 0644)
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
@@ -150,9 +192,8 @@ func main() {
 				return
 			}
 			defer file.Close()
-			// Generate unique filename
-			fileName := generateUniqueFilename("data", "file-"+header.Filename)
-			f, err := os.Create(filepath.Join("data", fileName))
+			fileName := generateUniqueFilename("data/files", header.Filename)
+			f, err := os.Create(filepath.Join("data/files", fileName))
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return
@@ -171,23 +212,17 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		oldName := strings.TrimPrefix(r.URL.Path, "/rename/")
+		oldPath := strings.TrimPrefix(r.URL.Path, "/rename/")
 		newName := r.FormValue("newname")
 		if newName == "" {
 			http.Error(w, "New name cannot be empty", http.StatusBadRequest)
 			return
 		}
-		// Add prefix from old name if not present
-		if !strings.HasPrefix(newName, "text-") && !strings.HasPrefix(newName, "file-") {
-			newName = oldName[:5] + newName
-		}
-		// Generate unique filename
-		newName = generateUniqueFilename("data", newName)
-
-		// Rename the file
+		baseDir := filepath.Dir(filepath.Join("data", oldPath))
+		newName = generateUniqueFilename(baseDir, newName)
 		err := os.Rename(
-			filepath.Join("data", oldName),
-			filepath.Join("data", newName),
+			filepath.Join("data", oldPath),
+			filepath.Join(baseDir, newName),
 		)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -209,6 +244,15 @@ func main() {
 
 	http.HandleFunc("/download/", func(w http.ResponseWriter, r *http.Request) {
 		filename := strings.TrimPrefix(r.URL.Path, "/download/")
+		filePath := filepath.Join("data", filename)
+		// Set headers to force download
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filepath.Base(filename)))
+		w.Header().Set("Content-Type", "application/octet-stream")
+		http.ServeFile(w, r, filePath)
+	})
+
+	http.HandleFunc("/view/", func(w http.ResponseWriter, r *http.Request) {
+		filename := strings.TrimPrefix(r.URL.Path, "/view/")
 		http.ServeFile(w, r, filepath.Join("data", filename))
 	})
 
