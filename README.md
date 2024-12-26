@@ -13,8 +13,8 @@ A simple web application for sharing content (files and text) within your local 
 
 - Make arbitrary text content available to view/share on any device in the local network
 - Upload files and make them available to view/download on any device in the local network
-- Access content through a clean, modern interface with dark mode support that maintains its good looks even on mobile
-- Pure HTTP API, i.e., *no use of websockets* - this is good as it means *no external communications* (like for TURN with websockets)
+- Access content through a clean, modern interface with dark mode support that looks good on mobile too
+- Pure HTTP API, i.e., *no use of websockets* - this is good as it means *no external communications*
 - It can also be installed as a PWA (so it shows as an icon in mobile home screens)
 
 > [!NOTE]
