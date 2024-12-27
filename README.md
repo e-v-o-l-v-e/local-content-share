@@ -29,19 +29,37 @@ A simple web application for sharing content (files and text) within your local 
 
 ## Installation and Usage
 
+### Using Binary
+
+1. Download the appropriate binary for your system from the [latest release](https://github.com/tanq16/local-content-share/releases/latest)
+2. Make the binary executable (Linux/macOS):
+   ```bash
+   chmod +x local-content-share-*
+   ```
+3. Run the binary:
+   ```bash
+   ./local-content-share-*
+   ```
+
+The application will be available at `http://localhost:8080`
+
 ### Using Docker
+
+Use `docker` CLI one liner and setup a persistence directory (so a container failure does not delete your data):
 
 ```bash
 mkdir $HOME/.localcontentshare
 ```
 ```bash
-docker run --name local-content-share -p 8080:8080 \
--v $HOME/.localcontentshare:/app/data tanq16/local-content-share:latest
+docker run --name local-content-share \
+  -p 8080:8080 \
+  -v $HOME/.localcontentshare:/app/data \
+  tanq16/local-content-share:latest
 ```
 
 The application will be available at `http://localhost:8080`
 
-You could also use the following compose file with container managers like Portainer and Dockge:
+You could also use the following compose file with container managers like Portainer and Dockge (remember to change the mounted volume):
 
 ```yaml
 services:
@@ -56,20 +74,6 @@ services:
 
 > [!WARNING]
 > The public image built via GitHub actions only builds an x86-64 image. If you need an ARM variant, just run `docker build -t lcshare:local .` after cloning the repo. Then for the image use `lcshare:local` instead of the tag mentioned above.
-
-### Using Binary
-
-1. Download the appropriate binary for your system from the [latest release](https://github.com/tanq16/local-content-share/releases/latest)
-2. Make the binary executable (Linux/macOS):
-   ```bash
-   chmod +x local-content-share-*
-   ```
-3. Run the binary:
-   ```bash
-   ./local-content-share-*
-   ```
-
-The application will be available at `http://localhost:8080`
 
 ### Using Go
 
