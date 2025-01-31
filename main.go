@@ -242,12 +242,36 @@ func main() {
 		w.Write(content)
 	})
 
+	// http.HandleFunc("/download/", func(w http.ResponseWriter, r *http.Request) {
+	// 	filename := strings.TrimPrefix(r.URL.Path, "/download/")
+	// 	filePath := filepath.Join("data", filename)
+	// 	// Set headers to force download
+	// 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filepath.Base(filename)))
+	// 	w.Header().Set("Content-Type", "application/octet-stream")
+	// 	http.ServeFile(w, r, filePath)
+	// })
+
 	http.HandleFunc("/download/", func(w http.ResponseWriter, r *http.Request) {
 		filename := strings.TrimPrefix(r.URL.Path, "/download/")
 		filePath := filepath.Join("data", filename)
-		// Set headers to force download
+		file, err := os.Open(filePath)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
+		// 512 bytes to detect mime-type
+		buffer := make([]byte, 512)
+		_, err = file.Read(buffer)
+		if err != nil && err != io.EOF {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		contentType := http.DetectContentType(buffer)
+		// Reset file pointer
+		file.Seek(0, 0)
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filepath.Base(filename)))
-		w.Header().Set("Content-Type", "application/octet-stream")
+		w.Header().Set("Content-Type", contentType)
 		http.ServeFile(w, r, filePath)
 	})
 

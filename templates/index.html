@@ -117,6 +117,9 @@
                     {{else}}
                         <div class="entry-content">{{.Filename}}</div>
                         <div class="entry-actions">
+                            <button onclick="showRenamePrompt('{{.ID}}')" class="btn-icon" title="Rename">
+                                <i class="fas fa-pencil"></i>
+                            </button>
                             <a href="/download/{{.ID}}" class="btn-icon" title="Download">
                                 <i class="fas fa-download"></i>
                             </a>
