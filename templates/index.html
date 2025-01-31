@@ -98,41 +98,59 @@
                 </div>
             </section>
 
-            <div class="entries-grid">
-                {{range .}}
-                <div class="entry-card">
-                    {{if eq .Type "text"}}
-                        <div class="entry-content">{{.Filename}}</div>
-                        <div class="entry-actions">
-                            <button onclick="showRenamePrompt('{{.ID}}')" class="btn-icon" title="Rename">
-                                <i class="fas fa-pencil"></i>
-                            </button>
-                            <a href="/show/{{.ID}}" class="btn-icon" title="Show">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="/delete/{{.ID}}" class="btn-icon" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </div>
-                    {{else}}
-                        <div class="entry-content">{{.Filename}}</div>
-                        <div class="entry-actions">
-                            <button onclick="showRenamePrompt('{{.ID}}')" class="btn-icon" title="Rename">
-                                <i class="fas fa-pencil"></i>
-                            </button>
-                            <a href="/download/{{.ID}}" class="btn-icon" title="Download">
-                                <i class="fas fa-download"></i>
-                            </a>
-                            <a href="/view/{{.ID}}" class="btn-icon" title="View">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="/delete/{{.ID}}" class="btn-icon" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </div>
-                    {{end}}
-                </div>
-                {{end}}
+            <div class="content-sections">
+                <!-- Text Snippets Section -->
+                <section class="content-section">
+                    <h2 class="section-title">Snippets</h2>
+                    <div class="entries-grid">
+                        {{range .}}
+                            {{if eq .Type "text"}}
+                            <div class="entry-card">
+                                <div class="entry-content">{{.Filename}}</div>
+                                <div class="entry-actions">
+                                    <button onclick="showRenamePrompt('{{.ID}}')" class="btn-icon" title="Rename">
+                                        <i class="fas fa-pencil"></i>
+                                    </button>
+                                    <a href="/show/{{.ID}}" class="btn-icon" title="Show">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/delete/{{.ID}}" class="btn-icon" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {{end}}
+                        {{end}}
+                    </div>
+                </section>
+            
+                <!-- Files Section -->
+                <section class="content-section">
+                    <h2 class="section-title">Files</h2>
+                    <div class="entries-grid">
+                        {{range .}}
+                            {{if eq .Type "file"}}
+                            <div class="entry-card">
+                                <div class="entry-content">{{.Filename}}</div>
+                                <div class="entry-actions">
+                                    <button onclick="showRenamePrompt('{{.ID}}')" class="btn-icon" title="Rename">
+                                        <i class="fas fa-pencil"></i>
+                                    </button>
+                                    <a href="/download/{{.ID}}" class="btn-icon" title="Download">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    <a href="/view/{{.ID}}" class="btn-icon" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/delete/{{.ID}}" class="btn-icon" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {{end}}
+                        {{end}}
+                    </div>
+                </section>
             </div>
         </main>
     </div>
