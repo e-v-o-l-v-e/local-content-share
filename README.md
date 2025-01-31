@@ -9,13 +9,16 @@
 
 ---
 
-A simple web application for sharing content (files and text) within your local network across any device. The app can be launched via its binary or as a container. The primary features are:
+A simple web application for sharing text snippets and files within your local network across any device. The app is launched via an executable or as a container. The primary features are:
 
-- Make arbitrary text content available to view/share on any device in the local network
+- Make plain text snippets available to view/share on any device in the local network
 - Upload files and make them available to view/download on any device in the local network
 - Access content through a clean, modern interface with dark mode support that looks good on mobile too
-- Pure HTTP API, i.e., *no use of websockets* - this is good as it means *no external communications*
-- It can also be installed as a PWA (so it shows as an icon in mobile home screens)
+- Pure HTTP API, i.e., *no use of websockets* - this is a good thing as it means *no external communications needed*
+- Available as a PWA (so it shows as an icon in mobile home screens)
+- Rename snippets of files uploaded to easily find them in the UI
+- Available as a binary for MacOS, Windows, and Linux for both x86-64 and ARM64 architectures
+- Multi-arch (x86-64 and ARM64) Docker image that works well with reverse proxies
 
 > [!NOTE]
 > This application is meant to be deployed within your homelab only. There is no authentication mechanism implemented.
@@ -32,14 +35,8 @@ A simple web application for sharing content (files and text) within your local 
 ### Using Binary
 
 1. Download the appropriate binary for your system from the [latest release](https://github.com/tanq16/local-content-share/releases/latest)
-2. Make the binary executable (Linux/macOS):
-   ```bash
-   chmod +x local-content-share-*
-   ```
-3. Run the binary:
-   ```bash
-   ./local-content-share-*
-   ```
+2. Make the binary executable (Linux/macOS) with `chmod +x local-content-share-*`
+3. Run the binary with `./local-content-share-*`
 
 The application will be available at `http://localhost:8080`
 
@@ -54,12 +51,12 @@ mkdir $HOME/.localcontentshare
 docker run --name local-content-share \
   -p 8080:8080 \
   -v $HOME/.localcontentshare:/app/data \
-  tanq16/local-content-share:latest
+  tanq16/local-content-share:main
 ```
 
 The application will be available at `http://localhost:8080`
 
-You could also use the following compose file with container managers like Portainer and Dockge (remember to change the mounted volume):
+You can also use the following compose file with container managers like Portainer and Dockge (remember to change the mounted volume):
 
 ```yaml
 services:
@@ -69,11 +66,8 @@ services:
     volumes:
       - /home/tanq/lcshare:/app/data
     ports:
-      - 5000:8080
+      - 8080:8080
 ```
-
-> [!WARNING]
-> The public image built via GitHub actions only builds an x86-64 image. If you need an ARM variant, just run `docker build -t lcshare:local .` after cloning the repo. Then for the image use `lcshare:local` instead of the tag mentioned above.
 
 ### Using Go
 
@@ -98,12 +92,12 @@ go build .
    - Type or paste your text in the text area
    - Click the send button (like the telegram arrow)
    - It will set a timestamp-based file name
-- To rename files (text snippets only):
+- To rename files or text snippets:
    - Click the pencil icon and provide the new name
    - It will automatically append 4 random digits if your input isn't unique
 - To share files:
-   - Click the upload button
-   - Select your file
+   - Click the upload button and select your file
+   - OR drag and drop your file to the text area
    - It will automatically append 4 random digits if filename isn't unique
 - To view content, click the eye icon:
    - Text content: shows raw text
