@@ -65,30 +65,17 @@
                     <label class="btn-icon upload-btn" title="Upload file">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <span class="upload-text">Upload</span>
-                        <input 
-                            type="file" 
-                            name="file" 
-                            onChange="document.getElementById('fileForm').submit()"
+                        <input type="file" name="file" onChange="document.getElementById('fileForm').submit()"
                         >
                     </label>
                 </form>
 
                 <!-- Text Content Form -->
-                <div
-                    class="compose-card"
-                    id="dropZone"
-                    ondragover="handleDragOver(event)"
-                    ondrop="handleDrop(event)"
-                    ondragleave="handleDragLeave(event)"
-                    ondragenter="handleDragEnter(event)"
-                >
+                <div class="compose-card" id="dropZone" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)" ondragenter="handleDragEnter(event)">
                     <form action="/submit" method="POST" enctype="multipart/form-data" id="textForm">
                         <input type="hidden" name="type" value="text">
-                        <textarea 
-                            name="content" 
-                            placeholder="Add text to share ..." 
-                            rows="4"
-                        ></textarea>
+                        <input type="text" name="filename" placeholder="Name (defaults to date string)" class="filename-input">
+                        <textarea name="content" placeholder="Add text snippets to store or share" rows="4"></textarea>
                         <div class="actions-wrapper">
                             <button type="submit" class="btn-icon btn-primary" title="Send">
                                 <i class="fas fa-paper-plane"></i>

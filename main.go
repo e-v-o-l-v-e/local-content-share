@@ -179,8 +179,14 @@ func main() {
 				http.Redirect(w, r, "/", http.StatusSeeOther)
 				return
 			}
-			timestamp := time.Now().Format("Jan-02-15-04-05")
-			err := os.WriteFile(filepath.Join("data/text", timestamp), []byte(content), 0644)
+			filename := r.FormValue("filename")
+			if filename == "" {
+				filename = time.Now().Format("Jan-02-15-04-05")
+			} else {
+				filename = generateUniqueFilename("data/text", filename)
+			}
+
+			err := os.WriteFile(filepath.Join("data/text", filename), []byte(content), 0644)
 			if err != nil {
 				http.Error(w, err.Error(), 500)
 				return

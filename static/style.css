@@ -176,6 +176,28 @@ textarea::placeholder {
     background: var(--primary-light);
 }
 
+.filename-input {
+    width: 100%;
+    background: var(--gray-100);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    color: var(--gray-700);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.filename-input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    background: var(--white);
+}
+
+.filename-input::placeholder {
+    color: var(--gray-500);
+}
+
 .entries-grid {
     display: grid;
     gap: 1rem;
