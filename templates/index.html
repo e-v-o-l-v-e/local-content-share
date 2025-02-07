@@ -127,7 +127,7 @@
                 <!-- Files Section -->
                 <section class="content-section">
                     <h2 class="section-title">Files</h2>
-                    <div class="entries-grid">
+                    <div class="entries-grid-files">
                         {{range .}}
                             {{if eq .Type "file"}}
                             <div class="entry-card">
@@ -199,6 +199,11 @@
                     const newGrid = newDoc.querySelector('.entries-grid');
                     if (currentGrid && newGrid && currentGrid.innerHTML !== newGrid.innerHTML) {
                         currentGrid.innerHTML = newGrid.innerHTML;
+                    }
+                    const currentGridFiles = document.querySelector('.entries-grid-files');
+                    const newGridFiles = newDoc.querySelector('.entries-grid-files');
+                    if (currentGridFiles && newGridFiles && currentGridFiles.innerHTML !== newGridFiles.innerHTML) {
+                        currentGridFiles.innerHTML = newGridFiles.innerHTML;
                     }
                 })
                 .catch(error => console.error('Error refreshing content:', error));

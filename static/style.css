@@ -182,6 +182,12 @@ textarea::placeholder {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 
+.entries-grid-files {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
 .entry-card {
     background: var(--white);
     border-radius: 20px;
