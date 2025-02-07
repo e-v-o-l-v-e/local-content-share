@@ -192,6 +192,38 @@ func main() {
 				return
 			}
 		case "file":
+			if err := r.ParseMultipartForm(2 << 28); err != nil {
+				http.Error(w, err.Error(), 500)
+				return
+			}
+			files := r.MultipartForm.File["files[]"]
+			if len(files) == 0 {
+				http.Error(w, "No files uploaded", 400)
+				return
+			}
+			for _, fileHeader := range files {
+				if err := func() error {
+					file, err := fileHeader.Open()
+					if err != nil {
+						return fmt.Errorf("failed to open uploaded file: %v", err)
+					}
+					defer file.Close()
+					fileName := generateUniqueFilename("data/files", fileHeader.Filename)
+					f, err := os.Create(filepath.Join("data/files", fileName))
+					if err != nil {
+						return fmt.Errorf("failed to create file: %v", err)
+					}
+					defer f.Close()
+					if _, err := io.Copy(f, file); err != nil {
+						return fmt.Errorf("failed to save file: %v", err)
+					}
+					return nil
+				}(); err != nil {
+					http.Error(w, err.Error(), 500)
+					return
+				}
+			}
+		case "file2":
 			file, header, err := r.FormFile("file")
 			if err != nil {
 				http.Error(w, err.Error(), 500)

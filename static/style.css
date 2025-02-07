@@ -118,6 +118,7 @@ textarea {
     min-height: 120px;
     resize: none;
     transition: all 0.3s ease;
+    font-family: inherit;
 }
 
 textarea:focus {
@@ -186,6 +187,7 @@ textarea::placeholder {
     color: var(--gray-700);
     margin-bottom: 1rem;
     transition: all 0.3s ease;
+    font-family: inherit;
 }
 
 .filename-input:focus {
