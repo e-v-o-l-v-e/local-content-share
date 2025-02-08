@@ -14,14 +14,17 @@ A simple web application for sharing text snippets and files within your local n
 - Make plain text snippets available to view/share on any device in the local network
 - Upload files and make them available to view/download on any device in the local network
 - Access content through a clean, modern interface with dark mode support that looks good on mobile too
-- Pure HTTP API, i.e., *no use of websockets* - this is a good thing as it means *no external communications needed*
-- Available as a PWA (so it shows as an icon in mobile home screens)
-- Rename snippets of files uploaded to easily find them in the UI
+- Pure HTTP API, i.e., *no use of websockets* - this is a good thing because it means *no external communications needed*
+- Frontend is available as a PWA (so it shows as an app with an icon on the mobile home screens)
+- Rename text snippets and files uploaded to easily find them in the UI
+- Edit text snippets to modify their content as needed
+- Multi-file drag-n-drop (drop into the text area) support for uploading files
 - Available as a binary for MacOS, Windows, and Linux for both x86-64 and ARM64 architectures
-- Multi-arch (x86-64 and ARM64) Docker image that works well with reverse proxies
+- Multi-arch (x86-64 and ARM64) Docker image for homelab deployments
+- Application that works well with reverse proxies in the mix (tested with Cloudflare tunnels and Nginx Proxy Manager)
 
 > [!NOTE]
-> This application is meant to be deployed within your homelab only. There is no authentication mechanism implemented.
+> This application is meant to be deployed within your homelab only. There is no authentication mechanism implemented. If you are exposing to the public, ensure there is authentication fronting it and non-destructive users using it.
 
 ## Screenshots
 
@@ -90,21 +93,24 @@ go build .
 
 - To share text content:
    - Type or paste your text in the text area
-   - Click the send button (like the telegram arrow)
-   - It will set a timestamp-based file name
+   - (OPTIONAL) type the name of the snippet (also the name of the file in the backend)
+   - Click the send button (looks like the telegram arrow)
+   - It will set a date-string-based file name if no custom name is specified
 - To rename files or text snippets:
-   - Click the pencil icon and provide the new name
-   - It will automatically append 4 random digits if your input isn't unique
+   - Click the cursor (i-beam) icon and provide the new name
+   - It will automatically prepend 4 random digits if the name isn't unique
+- To edit existing snippets:
+   - Click the pen icon and it will populate the expandable text area with the content
+   - Write the new content and click accept or deny (check or cross)
+   - On accepting, it will edit the content; on denying, it will refresh the page
 - To share files:
    - Click the upload button and select your file
-   - OR drag and drop your file to the text area
+   - OR drag and drop your file (even multiple files) to the text area
    - It will automatically append 4 random digits if filename isn't unique
 - To view content, click the eye icon:
-   - Text content: shows raw text
-   - Files: shows raw text, images, PDFs, etc. (basically files that browsers can view)
+   - For text content, it shows raw text
+   - For files, it shows raw text, images, PDFs, etc. (basically whatever way browsers can show items)
 - To download files, click the download icon
 - To delete content, click the trash icon
 
-A quick note of the data structure:
-
-The application creates a `data` directory to store all uploaded files and text content (both in `files` and `text` subfolders respectively). Make sure the application has write permissions for the directory where it runs.
+A quick note of the data structure: the application creates a `data` directory to store all uploaded files and text content (both in `files` and `text` subfolders respectively). Make sure the application has write permissions for the directory where it runs.

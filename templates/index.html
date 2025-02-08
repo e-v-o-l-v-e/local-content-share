@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#7C3AED">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon-192.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ContentShare">
     <meta name="format-detection" content="telephone=no">
@@ -95,7 +95,10 @@
                                 <div class="entry-content">{{.Filename}}</div>
                                 <div class="entry-actions">
                                     <button onclick="showRenamePrompt('{{.ID}}')" class="btn-icon" title="Rename">
-                                        <i class="fas fa-pencil"></i>
+                                        <i class="fas fa-i-cursor"></i>
+                                    </button>
+                                    <button onclick="showEditForm('{{.ID}}')" class="btn-icon" title="Edit">
+                                        <i class="fas fa-pen"></i>
                                     </button>
                                     <a href="/show/{{.ID}}" class="btn-icon" title="Show">
                                         <i class="fas fa-eye"></i>
@@ -120,7 +123,7 @@
                                 <div class="entry-content">{{.Filename}}</div>
                                 <div class="entry-actions">
                                     <button onclick="showRenamePrompt('{{.ID}}')" class="btn-icon" title="Rename">
-                                        <i class="fas fa-pencil"></i>
+                                        <i class="fas fa-i-cursor"></i>
                                     </button>
                                     <a href="/download/{{.ID}}" class="btn-icon" title="Download">
                                         <i class="fas fa-download"></i>
@@ -177,6 +180,36 @@
         }
     </script>
     <script>
+        async function showEditForm(id) {
+            const response = await fetch(`/show/${id}`);
+            const content = await response.text();
+            // Replace the compose card with the edit form
+            const modal = document.createElement('div');
+            modal.className = 'compose-card';
+            modal.innerHTML = `
+                <form action="/edit/${id}" method="POST">
+                    <input type="text" class="filename-input" value="Editing: ${id.split('/').pop()}" disabled>
+                    <textarea 
+                        name="content" 
+                        class="w-full bg-[#374151] border-2 border-transparent rounded-2xl p-5 text-gray-200 font-medium transition-all focus:outline-none focus:border-purple-700 min-h-[120px]"
+                        style="resize: vertical;"
+                    >${content}</textarea>
+                    <div class="actions-wrapper">
+                        <button type="button" onclick="window.location.reload()" class="btn-icon btn-secondary" title="Cancel">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <button type="submit" class="btn-icon btn-primary" title="Save">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </form>
+            `;
+            const composeCard = document.querySelector('.compose-card');
+            composeCard.replaceWith(modal);
+            // Set focus on textarea
+            modal.querySelector('textarea').focus();
+        }
+
         function refreshContent() {
             fetch(window.location.href)
                 .then(response => response.text())

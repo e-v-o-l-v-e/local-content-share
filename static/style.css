@@ -119,6 +119,7 @@ textarea {
     resize: none;
     transition: all 0.3s ease;
     font-family: inherit;
+    resize: vertical;
 }
 
 textarea:focus {

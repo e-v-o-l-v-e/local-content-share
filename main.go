@@ -324,5 +324,28 @@ func main() {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
+	http.HandleFunc("/edit/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		id := strings.TrimPrefix(r.URL.Path, "/edit/")
+		if !strings.HasPrefix(id, "text/") {
+			http.Error(w, "Can only edit text snippets", http.StatusBadRequest)
+			return
+		}
+		content := r.FormValue("content")
+		if content == "" {
+			http.Error(w, "Content cannot be empty", http.StatusBadRequest)
+			return
+		}
+		err := os.WriteFile(filepath.Join("data", id), []byte(content), 0644)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
