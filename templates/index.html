@@ -62,10 +62,10 @@
                 <!-- File Upload Form -->
                 <form action="/submit" method="POST" enctype="multipart/form-data" id="fileForm" class="file-upload-form">
                     <input type="hidden" name="type" value="file">
-                    <label class="btn-icon upload-btn" title="Upload file">
+                    <label class="btn-icon upload-btn" title="Upload files">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <span class="upload-text">Upload</span>
-                        <input type="file" name="file" onChange="document.getElementById('fileForm').submit()">
+                        <input type="file" name="multifile" multiple onChange="handleFileSelect(event)">
                     </label>
                 </form>
 
@@ -167,13 +167,29 @@
                 const formData = new FormData();
                 formData.append('type', 'file');
                 for (let i = 0; i < files.length; i++) {
-                    formData.append('files[]', files[i]);
+                    formData.append('multifile', files[i]);
                 }
                 fetch('/submit', {
                     method: 'POST',
                     body: formData
                 }).then(() => {
                     // Refresh the page to show the new file
+                    window.location.reload();
+                });
+            }
+        }
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                const formData = new FormData();
+                formData.append('type', 'file');
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('multifile', files[i]);
+                }
+                fetch('/submit', {
+                    method: 'POST',
+                    body: formData
+                }).then(() => {
                     window.location.reload();
                 });
             }
