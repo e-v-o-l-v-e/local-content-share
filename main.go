@@ -196,7 +196,7 @@ func main() {
 				http.Error(w, err.Error(), 500)
 				return
 			}
-			files := r.MultipartForm.File["files[]"]
+			files := r.MultipartForm.File["multifile"]
 			if len(files) == 0 {
 				http.Error(w, "No files uploaded", 400)
 				return
@@ -222,24 +222,6 @@ func main() {
 					http.Error(w, err.Error(), 500)
 					return
 				}
-			}
-		case "file2":
-			file, header, err := r.FormFile("file")
-			if err != nil {
-				http.Error(w, err.Error(), 500)
-				return
-			}
-			defer file.Close()
-			fileName := generateUniqueFilename("data/files", header.Filename)
-			f, err := os.Create(filepath.Join("data/files", fileName))
-			if err != nil {
-				http.Error(w, err.Error(), 500)
-				return
-			}
-			defer f.Close()
-			if _, err := io.Copy(f, file); err != nil {
-				http.Error(w, err.Error(), 500)
-				return
 			}
 		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
