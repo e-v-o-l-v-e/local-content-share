@@ -18,6 +18,7 @@ on:
 
 jobs:
   weekly-summary:
+    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     steps:
       - name: Calculate Summary
