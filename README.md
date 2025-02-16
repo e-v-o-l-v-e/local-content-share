@@ -17,7 +17,7 @@ A simple web application for sharing text snippets and files within your local n
 - Pure HTTP API, i.e., *no use of websockets* - this is a good thing because it means *no external communications needed*
 - Frontend is available as a PWA (so it shows as an app with an icon on the mobile home screens)
 - Rename text snippets and files uploaded to easily find them in the UI
-- Edit text snippets to modify their content as needed
+- Edit text snippets to modify their content as needed (think of it like a local pastebin)
 - Multi-file drag-n-drop (drop into the text area) support for uploading files
 - Available as a binary for MacOS, Windows, and Linux for both x86-64 and ARM64 architectures
 - Multi-arch (x86-64 and ARM64) Docker image for homelab deployments
