@@ -29,7 +29,7 @@ jobs:
           COMMITS=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/$REPO/commits?since=$(date -u -d 'last saturday' '+%Y-%m-%dT%H:%M:%SZ')" | jq length)
           curl -H "Content-Type: application/json" -X POST \
-          -d "{\"content\": \"Weekly summary for **$REPO**\nStars - $STARS, Forks - $FORKS, Commits - $COMMITS\"}" ${{ secrets.DISCORD_WEBHOOK }}
+          -d "{\"content\": \"Weekly summary for **$REPO**\nStars - $STARS, Forks - $FORKS, Commits this week - $COMMITS\"}" ${{ secrets.DISCORD_WEBHOOK }}
 
   issue-comment-notification:
     if: github.event_name == 'issues' || github.event_name == 'issue_comment'
