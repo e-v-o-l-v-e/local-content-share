@@ -197,7 +197,7 @@
     </script>
     <script>
         async function showEditForm(id) {
-            const response = await fetch(`/show/${id}`);
+            const response = await fetch(`/raw/${id}`);
             const content = await response.text();
             // Replace the compose card with the edit form
             const modal = document.createElement('div');
