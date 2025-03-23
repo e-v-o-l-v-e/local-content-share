@@ -21,7 +21,7 @@ jobs:
       - name: Determine Version
         id: version
         run: |
-          # Get the latest version tag, default to v0.1 if none exists
+          # Get the latest version tag, default to v0 if none exists
           LATEST_TAG=$(gh release list -L 1 | cut -f 1 | sed 's/Release //' || echo "v0")
           LATEST_TAG=${LATEST_TAG:-v0}
           
@@ -63,7 +63,7 @@ jobs:
 
       - name: Build Binary
         run: |
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags="-s -w" -o local-content-share-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
 
       - name: Upload Release Asset
         run: |
