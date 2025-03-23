@@ -37,6 +37,8 @@ From a technology perspective, the app boasts the following:
 | Light | <img src="assets/desktop-light.png" alt="Desktop Light Mode"> | <img src="assets/mobile-light.png" alt="Mobile Light Mode"> |
 | Dark | <img src="assets/desktop-dark.png" alt="Desktop Dark Mode"> | <img src="assets/mobile-dark.png" alt="Mobile Dark Mode"> |
 
+Click [here](./assets/screencast.webm) to see a screencast of the app in action!
+
 ## Installation and Usage
 
 ### Using Docker (Recommended)
