@@ -110,7 +110,6 @@ func main() {
 		tmpl.ExecuteTemplate(w, "index.html", entries)
 	})
 
-	// Scratchpad routes
 	http.HandleFunc("/md", func(w http.ResponseWriter, r *http.Request) {
 		tmpl.ExecuteTemplate(w, "md.html", nil)
 	})

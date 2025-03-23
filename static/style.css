@@ -1,10 +1,12 @@
-/* static/style.css */
 :root {
-    /* Light mode variables */
-    --primary: #7C3AED;
-    --primary-light: #DDD6FE;
-    --secondary: #EC4899;
-    --bg: #F5F5F5;
+    /* Color palette */
+    --purple-primary: #7C3AED;
+    --purple-light: #DDD6FE;
+    --pink-secondary: #EC4899;
+    --blue-accent: #4682B4;
+    --blue-link: #a2c1f4;
+    
+    /* Neutrals - Light Mode */
     --white: #FFFFFF;
     --gray-100: #F1F2F4;
     --gray-200: #E4E6EA;
@@ -12,7 +14,7 @@
     --gray-500: #6A7179;
     --gray-700: #364050;
     
-    /* Dark mode specific colors */
+    /* Neutrals - Dark Mode */
     --dark-bg: #111827;
     --dark-card: #1F2937;
     --dark-hover: #374151;
@@ -20,20 +22,29 @@
     --dark-text-secondary: #9CA3AF;
     --dark-border: #374151;
 
-    /* Scratchpad variables */
+    /* Semantic Variables - Light Mode Default */
+    --primary: var(--purple-primary);
+    --primary-light: var(--purple-light);
+    --secondary: var(--pink-secondary);
+    --bg: #F5F5F5;
+    
+    /* Component backgrounds */
     --bg-primary: var(--bg);
     --bg-secondary: var(--white);
     --bg-tertiary: var(--gray-100);
     
+    /* Text colors */
     --text-primary: var(--gray-700);
     --text-secondary: var(--gray-500);
     --text-accent: var(--primary);
     --text-muted: var(--gray-500);
     --text-link: var(--primary);
     
+    /* Borders */
     --border-primary: var(--gray-200);
     --border-secondary: var(--gray-300);
     
+    /* Interactive elements */
     --button-hover: var(--primary-light);
     --scrollbar-thumb: var(--gray-300);
     --code-bg: var(--gray-100);
@@ -47,8 +58,10 @@
     --grid-cell-border: var(--gray-300);
 }
 
+/* Dark Mode Override */
 @media (prefers-color-scheme: dark) {
     :root {
+        /* Override semantic variables for dark mode */
         --bg: var(--dark-bg);
         --white: var(--dark-card);
         --gray-100: var(--dark-hover);
@@ -57,20 +70,22 @@
         --gray-500: var(--dark-text-secondary);
         --gray-700: var(--dark-text);
 
-        /* Scratchpad variables for dark mode */
+        /* Component backgrounds */
         --bg-primary: var(--dark-bg);
         --bg-secondary: var(--dark-card);
         --bg-tertiary: var(--dark-hover);
         
+        /* Text colors */
         --text-primary: var(--dark-text);
         --text-secondary: var(--dark-text-secondary);
-        --text-accent: var(--primary);
         --text-muted: var(--dark-text-secondary);
         --text-link: var(--primary-light);
         
+        /* Borders */
         --border-primary: var(--dark-border);
         --border-secondary: var(--dark-text-secondary);
         
+        /* Interactive elements */
         --button-hover: var(--dark-hover);
         --scrollbar-thumb: var(--dark-text-secondary);
         --code-bg: rgba(0, 0, 0, 0.2);
@@ -78,6 +93,7 @@
     }
 }
 
+/* Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -87,7 +103,7 @@
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
-    color: var(--gray-700);
+    color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.5;
 }
@@ -98,21 +114,9 @@ body {
     padding: 3rem 2rem;
 }
 
-.glass-blur {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-    .glass-blur {
-        background: rgba(0, 0, 0, 0.2);
-    }
-}
-
 header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: 2rem;
     position: relative;
 }
 
@@ -126,24 +130,44 @@ h1 {
     margin-bottom: 1rem;
 }
 
-@media screen and (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
 }
 
+::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Main Content and Container Styles */
 .input-section {
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 3rem;
+    position: relative;
 }
 
 .compose-card {
-    background: var(--white);
+    background: var(--bg-secondary);
     border-radius: 24px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(124, 58, 237, 0.05);
     position: relative;
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--border-primary);
+    width: 100%;
+    max-width: 1000px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -152,31 +176,62 @@ h1 {
     }
 }
 
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+/* Form Elements */
 textarea {
     width: 100%;
-    background: var(--gray-100);
+    background: var(--bg-tertiary);
     border: 2px solid transparent;
     border-radius: 16px;
     padding: 1.25rem;
     font-size: 1rem;
-    color: var(--gray-700);
+    color: var(--text-primary);
     min-height: 120px;
-    resize: none;
+    resize: vertical;
     transition: all 0.3s ease;
     font-family: inherit;
-    resize: vertical;
 }
 
 textarea:focus {
     outline: none;
     border-color: var(--primary-light);
-    background: var(--white);
+    background: var(--bg-secondary);
 }
 
 textarea::placeholder {
-    color: var(--gray-500);
+    color: var(--text-secondary);
 }
 
+.filename-input {
+    width: 100%;
+    background: var(--bg-tertiary);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.filename-input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    background: var(--bg-secondary);
+}
+
+.filename-input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Button Styles */
 .actions-wrapper {
     position: absolute;
     right: 2.5rem;
@@ -199,154 +254,23 @@ textarea::placeholder {
 
 .btn-primary {
     background: var(--primary);
-    color: white;
+    color: var(--white);
     box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
 }
 
 .btn-secondary {
-    background: var(--white);
+    background: var(--bg-secondary);
     color: var(--primary);
     border: 2px solid var(--primary-light);
 }
 
 .btn-primary:hover {
-    background: #6D28D9;
+    background: #6D28D9; /* Darker purple for hover */
     box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
 }
 
 .btn-secondary:hover {
-    background: var(--gray-100);
-}
-
-.drag-over {
-    border: 2px dashed var(--primary);
-    background: var(--primary-light);
-}
-
-.filename-input {
-    width: 100%;
-    background: var(--gray-100);
-    border: 2px solid transparent;
-    border-radius: 16px;
-    padding: 0.75rem 1.25rem;
-    font-size: 1rem;
-    color: var(--gray-700);
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-    font-family: inherit;
-}
-
-.filename-input:focus {
-    outline: none;
-    border-color: var(--primary-light);
-    background: var(--white);
-}
-
-.filename-input::placeholder {
-    color: var(--gray-500);
-}
-
-.entries-grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-}
-
-.entries-grid-files {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-}
-
-.entry-card {
-    background: var(--white);
-    border-radius: 20px;
-    padding: 1rem;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.entry-card::before {
-    display: none;
-}
-
-.entry-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-    .entry-card:hover {
-        box-shadow: 0 8px 24px rgba(90, 90, 90, 0.1);
-    }
-}
-
-.entry-card:hover::before {
-    opacity: 1;
-}
-
-.entry-content {
-    font-size: 0.95rem;
-    color: var(--gray-500);
-    margin-bottom: 1rem;
-}
-
-.entry-actions {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: flex-end;
-}
-
-.entry-actions .btn-icon {
-    padding: 16px;
-    color: var(--gray-500);
-    background: var(--gray-100);
-    color: var(--gray-500);
-}
-
-.entry-actions .btn-icon:hover {
-    background: var(--primary-light);
-    color: var(--primary);
-}
-
-input[type="file"] {
-    display: none;
-}
-
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--gray-100);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--gray-300);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--gray-500);
-}
-
-.input-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 3rem;
-}
-
-.compose-card {
-    width: 100%;
-    max-width: 1000px;
-}
-
-.file-upload-form {
-    text-align: center;
-    margin-bottom: 1.5rem;
+    background: var(--bg-tertiary);
 }
 
 .upload-btn {
@@ -361,8 +285,8 @@ input[type="file"] {
     transition: all 0.2s ease;
     cursor: pointer;
     font-size: 0.95rem;
-    min-width: 150px;  /* Ensure minimum width */
-    justify-content: center; /* Center the content */
+    min-width: 150px;
+    justify-content: center;
 }
 
 .upload-btn i {
@@ -383,38 +307,22 @@ input[type="file"] {
     color: var(--primary);
 }
 
-.content-sections {
+.back-btn {
+    margin-right: 10px;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
 }
 
-.content-section {
-    border-radius: 24px;
-}
-
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--gray-700);
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    text-align: center;
-    border-bottom: 1px solid var(--gray-200);
-}
-
-/* Content Viewer Styles */
-.viewer-container {
-    padding: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.viewer-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    gap: 10px;
+.back-btn:hover {
+    background-color: #6D28D9; /* Darker purple for hover */
 }
 
 .action-button {
@@ -432,40 +340,139 @@ input[type="file"] {
 
 .primary-button {
     background: var(--primary);
-    color: white;
+    color: var(--white);
 }
 
 .primary-button:hover {
-    background: #6D28D9;
+    background: #6D28D9; /* Darker purple for hover */
 }
 
 .secondary-button {
     background: var(--gray-200);
-    color: var(--gray-700);
+    color: var(--text-primary);
 }
 
 .secondary-button:hover {
     background: var(--gray-300);
 }
 
+/* File Upload Styling */
+input[type="file"] {
+    display: none;
+}
+
+.file-upload-form {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.drag-over {
+    border: 2px dashed var(--primary);
+    background: var(--primary-light);
+}
+
+/* Content Sections */
+.content-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.content-section {
+    border-radius: 24px;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.entries-grid,
+.entries-grid-files {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.entry-card {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.entry-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+    .entry-card:hover {
+        box-shadow: 0 8px 24px rgba(90, 90, 90, 0.1);
+    }
+}
+
+.entry-content {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.entry-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.entry-actions .btn-icon {
+    padding: 16px;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+}
+
+.entry-actions .btn-icon:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* Content Viewer Styles */
+.viewer-container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.viewer-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
 .viewer-filename {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 15px;
-    color: var(--gray-700);
+    color: var(--text-primary);
     text-align: center;
 }
 
 .content-view {
-    background: var(--white);
+    background: var(--bg-secondary);
     padding: 20px;
     border-radius: 12px;
     white-space: pre-wrap;
     word-break: break-word;
     line-height: 1.5;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: var(--gray-700);
-    border: 1px solid var(--gray-200);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
     box-shadow: 0 4px 20px rgba(124, 58, 237, 0.05);
 }
 
@@ -475,23 +482,7 @@ input[type="file"] {
     }
 }
 
-@media screen and (max-width: 768px) {
-    .viewer-actions {
-        flex-direction: column;
-    }
-    
-    .action-button {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .content-view {
-        padding: 15px;
-    }
-}
-
-/* Styles for Scratchpad (both Markdown and Rich Text) */
-
+/* Scratchpad Styles (Both MD and Rich Text) */
 .note-container {
     display: flex;
     flex-direction: column;
@@ -504,20 +495,22 @@ input[type="file"] {
 
 .note-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-primary);
     margin-bottom: 20px;
+    gap: 10px;
 }
 
 .app-title {
-    font-size: 1.5rem;
+    font-size: 2.5rem;
     font-weight: bold;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 .note-content {
@@ -567,6 +560,14 @@ input[type="file"] {
 
 .editor-toolbar button:hover {
     background-color: var(--button-hover);
+}
+
+.editor-toolbar button i {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Editor Container */
@@ -651,7 +652,10 @@ input[type="file"] {
     border-bottom: 1px solid var(--border-primary);
 }
 
-.markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+.markdown-body h3, 
+.markdown-body h4, 
+.markdown-body h5, 
+.markdown-body h6 {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
     font-weight: bold;
@@ -692,7 +696,6 @@ input[type="file"] {
 
 .markdown-body code {
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    background-color: var(--code-bg);
     padding: 0.2em 0.4em;
     border-radius: 3px;
     font-size: 0.9em;
@@ -704,7 +707,8 @@ input[type="file"] {
     margin-bottom: 1em;
 }
 
-.markdown-body th, .markdown-body td {
+.markdown-body th, 
+.markdown-body td {
     border: 1px solid var(--border-secondary);
     padding: 0.5em;
 }
@@ -726,37 +730,20 @@ input[type="file"] {
     border: 1px solid var(--border-secondary);
 }
 
-/* Button Styles */
-.back-btn {
-    margin-right: 10px;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 5px 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9rem;
-}
-
-.back-btn:hover {
-    background-color: #6D28D9;
-}
-
 /* Heading Buttons */
-.h1-button, .h2-button {
+.h1-button, 
+.h2-button {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.h1-button i, .h2-button i {
+.h1-button i, 
+.h2-button i {
     margin-right: 2px;
 }
 
-/* Table-related styles */
+/* Modal styles */
 .modal {
     position: fixed;
     top: 0;
@@ -818,6 +805,7 @@ input[type="file"] {
     border: 1px solid var(--border-primary);
 }
 
+/* Grid for table selection */
 .grid {
     display: grid;
     grid-template-columns: repeat(10, 20px);
@@ -853,17 +841,12 @@ input[type="file"] {
     line-height: 20px;
 }
 
-/* Make toolbar buttons consistent */
-.editor-toolbar button i {
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Responsive adjustments */
+/* Responsive styles */
 @media screen and (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
     .note-container {
         padding: 10px;
     }
@@ -871,12 +854,28 @@ input[type="file"] {
     .editor-toolbar {
         overflow-x: auto;
         padding: 8px 5px;
-        background-color: var(--bg-secondary);
     }
     
     .editor-toolbar button {
         padding: 6px;
         min-width: 28px;
         height: 28px;
+    }
+    
+    .viewer-actions {
+        flex-direction: column;
+    }
+    
+    .action-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .content-view {
+        padding: 15px;
+    }
+
+    .app-title {
+        font-size: 2rem;
     }
 }

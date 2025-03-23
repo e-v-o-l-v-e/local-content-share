@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scratchpad - Markdown Editor</title>
+  <title>Scratchpad</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="/style.css">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -11,12 +11,14 @@
 </head>
 <body>
   <div class="note-container">
+    <div class="app-title">Scratchpad</div>
     <div class="note-header">
-      <button class="back-btn" onclick="window.location.href='/'">
+      <button class="btn-icon upload-btn" onclick="window.location.href='/'">
         <i class="fas fa-arrow-left"></i> Back
       </button>
-      <div class="app-title">Markdown Scratchpad</div>
-      <div style="width: 80px;"></div> <!-- Spacer for alignment -->
+      <button class="btn-icon upload-btn" onclick="window.location.href='/rtext'">
+        <i class="fas fa-text-height"></i> Rich Text
+      </button>
     </div>
     
     <div class="note-content">

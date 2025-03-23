@@ -10,16 +10,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <div class="container viewer-container">
-        <div class="viewer-actions">
-            <button class="action-button primary-button" onclick="window.location.href='/'">
-                <i class="fas fa-home"></i> Back to Home
+    <div class="viewer-container">
+        <div class="viewer-filename">{{.Filename}}</div>
+        <div class="note-header">
+            <button class="btn-icon upload-btn" onclick="window.location.href='/'">
+                <i class="fas fa-home"></i> Back
             </button>
-            <button class="action-button secondary-button" onclick="copyContent()">
-                <i class="fas fa-copy"></i> Copy Content
+            <button class="btn-icon upload-btn" onclick="copyContent()">
+                <i class="fas fa-copy"></i> Copy
             </button>
         </div>
-        <div class="viewer-filename">{{.Filename}}</div>
         <div class="content-view" id="content-view">{{.Content}}</div>
     </div>
     <script>
