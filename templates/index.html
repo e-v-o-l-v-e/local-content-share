@@ -78,6 +78,16 @@
                     </a>
                 </div>
 
+                <!-- Progress Bar Container (initially hidden) -->
+                <div id="progress-container" style="display: none; width: 100%; margin-bottom: 15px;">
+                    <div style="text-align: center; margin-bottom: 5px;">
+                        <span id="progress-text">Uploading... 0%</span>
+                    </div>
+                    <div style="background-color: var(--bg-tertiary); border-radius: 10px; height: 5px; overflow: hidden;">
+                        <div id="progress-bar" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+
                 <!-- Text Content Form -->
                 <div class="compose-card" id="dropZone" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)" ondragenter="handleDragEnter(event)">
                     <form action="/submit" method="POST" enctype="multipart/form-data" id="textForm">
@@ -178,13 +188,38 @@
                 for (let i = 0; i < files.length; i++) {
                     formData.append('multifile', files[i]);
                 }
-                fetch('/submit', {
-                    method: 'POST',
-                    body: formData
-                }).then(() => {
-                    // Refresh the page to show the new file
-                    window.location.reload();
-                });
+                // Progress
+                const progressContainer = document.getElementById('progress-container');
+                const progressBar = document.getElementById('progress-bar');
+                const progressText = document.getElementById('progress-text');
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                progressText.innerText = 'Uploading... 0%';
+                
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/submit', true);
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percentComplete + '%';
+                        progressText.innerText = `Uploading... ${percentComplete}%`;
+                    }
+                };
+                xhr.onload = function() {
+                    if (xhr.status === 200 || xhr.status === 303) {
+                        progressText.innerText = 'Upload complete!';
+                        progressBar.style.width = '100%';
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        progressText.innerText = 'Upload failed!';
+                    }
+                };
+                xhr.onerror = function() {
+                    progressText.innerText = 'Upload failed!';
+                };
+                xhr.send(formData);
             }
         }
         function handleFileSelect(event) {
@@ -195,12 +230,37 @@
                 for (let i = 0; i < files.length; i++) {
                     formData.append('multifile', files[i]);
                 }
-                fetch('/submit', {
-                    method: 'POST',
-                    body: formData
-                }).then(() => {
-                    window.location.reload();
-                });
+                const progressContainer = document.getElementById('progress-container');
+                const progressBar = document.getElementById('progress-bar');
+                const progressText = document.getElementById('progress-text');
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                progressText.innerText = 'Uploading... 0%';
+                
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/submit', true);
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percentComplete + '%';
+                        progressText.innerText = `Uploading... ${percentComplete}%`;
+                    }
+                };
+                xhr.onload = function() {
+                    if (xhr.status === 200 || xhr.status === 303) {
+                        progressText.innerText = 'Upload complete!';
+                        progressBar.style.width = '100%';
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        progressText.innerText = 'Upload failed!';
+                    }
+                };
+                xhr.onerror = function() {
+                    progressText.innerText = 'Upload failed!';
+                };
+                xhr.send(formData);
             }
         }
     </script>

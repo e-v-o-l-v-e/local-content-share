@@ -44,22 +44,29 @@ function setupEventListeners() {
 }
 
 function updatePreview() {
-  marked.setOptions({
-    breaks: true,
-    gfm: true,
-    headerIds: true,
-    highlight: function(code) {
-      return code;
-    }
-  });
-  // Render markdown to HTML
-  markdownPreview.innerHTML = marked.parse(markdownEditor.value);  
-  const links = markdownPreview.querySelectorAll('a');
-  links.forEach(link => {
-    link.setAttribute('target', '_blank');
-    link.setAttribute('rel', 'noopener noreferrer');
-  });
-}
+    marked.setOptions({
+      breaks: true,
+      gfm: true,
+      headerIds: true,
+      highlight: function(code, language) {
+        if (language && hljs.getLanguage(language)) {
+          try {
+            return hljs.highlight(code, { language: language }).value;
+          } catch (err) {}
+        }
+        return hljs.highlightAuto(code).value;
+      }
+    });
+    markdownPreview.innerHTML = marked.parse(markdownEditor.value);
+    markdownPreview.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightElement(block);
+    });
+    const links = markdownPreview.querySelectorAll('a');
+    links.forEach(link => {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+    });
+  }
 
 function decreaseFontSize() {
   if (baseFontSize > 10) {
