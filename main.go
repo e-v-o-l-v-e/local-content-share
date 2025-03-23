@@ -36,6 +36,12 @@ var icon192PNG []byte
 //go:embed static/icon-512.png
 var icon512PNG []byte
 
+//go:embed static/md.js
+var mdJS []byte
+
+//go:embed static/rtext.js
+var rtextJS []byte
+
 type Entry struct {
 	ID       string
 	Content  string
@@ -102,6 +108,25 @@ func main() {
 			})
 		}
 		tmpl.ExecuteTemplate(w, "index.html", entries)
+	})
+
+	// Scratchpad routes
+	http.HandleFunc("/md", func(w http.ResponseWriter, r *http.Request) {
+		tmpl.ExecuteTemplate(w, "md.html", nil)
+	})
+
+	http.HandleFunc("/rtext", func(w http.ResponseWriter, r *http.Request) {
+		tmpl.ExecuteTemplate(w, "rtext.html", nil)
+	})
+
+	http.HandleFunc("/md.js", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/javascript")
+		w.Write(mdJS)
+	})
+
+	http.HandleFunc("/rtext.js", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/javascript")
+		w.Write(rtextJS)
 	})
 
 	http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {

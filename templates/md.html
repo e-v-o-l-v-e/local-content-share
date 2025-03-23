@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scratchpad - Markdown Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="note-container">
+    <div class="note-header">
+      <button class="back-btn" onclick="window.location.href='/'">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <div class="app-title">Markdown Scratchpad</div>
+      <div style="width: 80px;"></div> <!-- Spacer for alignment -->
+    </div>
+    
+    <div class="note-content">
+      <div class="editor-toolbar">
+        <button onclick="selectAllText()" title="Select All"><i class="fas fa-object-group"></i></button>
+        <button id="decrease-font" title="Decrease Font Size"><i class="fas fa-search-minus"></i></button>
+        <button id="increase-font" title="Increase Font Size"><i class="fas fa-search-plus"></i></button>
+        <button onclick="undoChange()" title="Undo"><i class="fas fa-undo"></i></button>
+        <button onclick="redoChange()" title="Redo"><i class="fas fa-redo"></i></button>
+        <button id="toggle-mode" onclick="toggleMode()" title="Reader Mode"><i class="fas fa-book-reader"></i></button>
+      </div>
+      
+      <div id="editor-container">
+        <textarea id="markdown-editor" placeholder="Write your markdown here..." spellcheck="false"></textarea>
+        <div id="markdown-preview" class="markdown-body"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+  <script src="/md.js"></script>
+</body>
+</html>

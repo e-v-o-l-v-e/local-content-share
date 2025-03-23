@@ -59,15 +59,24 @@
 
         <main>
             <section class="input-section">
-                <!-- File Upload Form -->
-                <form action="/submit" method="POST" enctype="multipart/form-data" id="fileForm" class="file-upload-form">
-                    <input type="hidden" name="type" value="file">
-                    <label class="btn-icon upload-btn" title="Upload files">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span class="upload-text">Upload</span>
-                        <input type="file" name="multifile" multiple onChange="handleFileSelect(event)">
-                    </label>
-                </form>
+                <!-- File Upload and Scratchpad Buttons -->
+                <div class="buttons-container" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                    <!-- File Upload Form -->
+                    <form action="/submit" method="POST" enctype="multipart/form-data" id="fileForm" class="file-upload-form" style="margin-bottom: 0;">
+                        <input type="hidden" name="type" value="file">
+                        <label class="btn-icon upload-btn" title="Upload files">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span class="upload-text">Upload</span>
+                            <input type="file" name="multifile" multiple onChange="handleFileSelect(event)">
+                        </label>
+                    </form>
+                    
+                    <!-- Scratchpad Button -->
+                    <a href="/md" class="btn-icon upload-btn" title="Open Scratchpad" style="text-decoration: none; display: inline-flex;">
+                        <i class="fas fa-edit"></i>
+                        <span class="upload-text">Scratchpad</span>
+                    </a>
+                </div>
 
                 <!-- Text Content Form -->
                 <div class="compose-card" id="dropZone" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)" ondragenter="handleDragEnter(event)">
