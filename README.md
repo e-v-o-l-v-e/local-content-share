@@ -9,19 +9,23 @@
 
 ---
 
-A simple web application for sharing text snippets and files within your local network across any device. The app is launched via an executable or as a container. The primary features are:
+A simple self-hosted app for sharing text snippets and files within your local network across any device and a scratchpad. Think of this as a simple and elegant alternative to airdrop, local-pastebin and notepad. The primary features are:
 
 - Make plain text snippets available to view/share on any device in the local network
 - Upload files and make them available to view/download on any device in the local network
-- Access content through a clean, modern interface with dark mode support that looks good on mobile too
-- Pure HTTP API, i.e., *no use of websockets* - this is a good thing because it means *no external communications needed*
-- Frontend is available as a PWA (so it shows as an app with an icon on the mobile home screens)
+- Built-in Scratchpad with both Markdown and Rich Text editing capabilities
 - Rename text snippets and files uploaded to easily find them in the UI
-- Edit text snippets to modify their content as needed (think of it like a local pastebin)
+- Edit text snippets to modify their content as needed
 - Multi-file drag-n-drop (drop into the text area) support for uploading files
+
+From a technology perspective, the app boasts the following:
+
+- Pure HTTP API, i.e., *no use of websockets* - this is good because it means *no external communications needed* for the sharing aspect
 - Available as a binary for MacOS, Windows, and Linux for both x86-64 and ARM64 architectures
 - Multi-arch (x86-64 and ARM64) Docker image for homelab deployments
-- Application that works well with reverse proxies in the mix (tested with Cloudflare tunnels and Nginx Proxy Manager)
+- Works well with reverse proxies in the mix (tested with Cloudflare tunnels and Nginx Proxy Manager)
+- Frontend available over browsers and as a PWA (so it shows as an app with an icon on the mobile home screens)
+- Clean, modern interface with dark mode support that looks good on mobile too
 
 > [!NOTE]
 > This application is meant to be deployed within your homelab only. There is no authentication mechanism implemented. If you are exposing to the public, ensure there is authentication fronting it and non-destructive users using it.
@@ -35,15 +39,7 @@ A simple web application for sharing text snippets and files within your local n
 
 ## Installation and Usage
 
-### Using Binary
-
-1. Download the appropriate binary for your system from the [latest release](https://github.com/tanq16/local-content-share/releases/latest)
-2. Make the binary executable (Linux/macOS) with `chmod +x local-content-share-*`
-3. Run the binary with `./local-content-share-*`
-
-The application will be available at `http://localhost:8080`
-
-### Using Docker
+### Using Docker (Recommended)
 
 Use `docker` CLI one liner and setup a persistence directory (so a container failure does not delete your data):
 
@@ -72,6 +68,12 @@ services:
       - 8080:8080
 ```
 
+### Using Binary
+
+Download the appropriate binary for your system from the [latest release](https://github.com/tanq16/local-content-share/releases/latest).
+
+Make the binary executable (for Linux/macOS) with `chmod +x local-content-share-*` and then run the binary with `./local-content-share-*`. The application will be available at `http://localhost:8080`.
+
 ### Using Go
 
 With `Go 1.23+` installed, run the following to download the binary to your GOBIN:
@@ -83,10 +85,9 @@ go install github.com/tanq16/local-content-share@latest
 Or, you can build from source like so:
 
 ```bash
-git clone https://github.com/tanq16/local-content-share.git
-cd local-content-share
+git clone https://github.com/tanq16/local-content-share.git && \
+cd local-content-share && \
 go build .
-./local-content-share # to run the tool
 ```
 
 ## Tips and Notes
@@ -112,5 +113,8 @@ go build .
    - For files, it shows raw text, images, PDFs, etc. (basically whatever way browsers can show items)
 - To download files, click the download icon
 - To delete content, click the trash icon
+- The scratchpad is only to write something quickly while leaving the tab open
+   - The markdown mode can be used to render things as HTML or print as a PDF
+   - There are some other features planned for improving the scratchpad functionality
 
 A quick note of the data structure: the application creates a `data` directory to store all uploaded files and text content (both in `files` and `text` subfolders respectively). Make sure the application has write permissions for the directory where it runs.
