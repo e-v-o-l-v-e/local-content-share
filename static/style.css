@@ -1,7 +1,7 @@
 :root {
     /* Color palette */
     --purple-primary: #7C3AED;
-    --purple-light: #DDD6FE;
+    --purple-light: #e2deed;
     --pink-secondary: #EC4899;
     --blue-accent: #4682B4;
     --blue-link: #a2c1f4;
@@ -17,10 +17,10 @@
     /* Neutrals - Dark Mode */
     --dark-bg: #111827;
     --dark-card: #1F2937;
-    --dark-hover: #374151;
+    --dark-hover: #303948;
     --dark-text: #E5E7EB;
     --dark-text-secondary: #9CA3AF;
-    --dark-border: #374151;
+    --dark-border: #303948;
 
     /* Semantic Variables - Light Mode Default */
     --primary: var(--purple-primary);
@@ -61,7 +61,6 @@
 /* Dark Mode Override */
 @media (prefers-color-scheme: dark) {
     :root {
-        /* Override semantic variables for dark mode */
         --bg: var(--dark-bg);
         --white: var(--dark-card);
         --gray-100: var(--dark-hover);
@@ -70,22 +69,18 @@
         --gray-500: var(--dark-text-secondary);
         --gray-700: var(--dark-text);
 
-        /* Component backgrounds */
         --bg-primary: var(--dark-bg);
         --bg-secondary: var(--dark-card);
         --bg-tertiary: var(--dark-hover);
         
-        /* Text colors */
         --text-primary: var(--dark-text);
         --text-secondary: var(--dark-text-secondary);
         --text-muted: var(--dark-text-secondary);
         --text-link: var(--primary-light);
         
-        /* Borders */
         --border-primary: var(--dark-border);
         --border-secondary: var(--dark-text-secondary);
         
-        /* Interactive elements */
         --button-hover: var(--dark-hover);
         --scrollbar-thumb: var(--dark-text-secondary);
         --code-bg: rgba(0, 0, 0, 0.2);
@@ -105,7 +100,6 @@ body {
     background: var(--bg);
     color: var(--text-primary);
     min-height: 100vh;
-    line-height: 1.5;
 }
 
 .container {
@@ -162,17 +156,20 @@ h1 {
 .compose-card {
     background: var(--bg-secondary);
     border-radius: 24px;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 4px 20px rgba(124, 58, 237, 0.05);
     position: relative;
-    border: 1px solid var(--border-primary);
     width: 100%;
     max-width: 1000px;
 }
 
 @media (prefers-color-scheme: dark) {
-    .compose-card {
+    .compose-card, .content-view {
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .entry-card:hover {
+        box-shadow: 0 8px 24px rgba(90, 90, 90, 0.1);
     }
 }
 
@@ -187,7 +184,7 @@ h1 {
 textarea {
     width: 100%;
     background: var(--bg-tertiary);
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     border-radius: 16px;
     padding: 1.25rem;
     font-size: 1rem;
@@ -211,7 +208,7 @@ textarea::placeholder {
 .filename-input {
     width: 100%;
     background: var(--bg-tertiary);
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     border-radius: 16px;
     padding: 0.75rem 1.25rem;
     font-size: 1rem;
@@ -240,71 +237,66 @@ textarea::placeholder {
     gap: 1rem;
 }
 
-.btn-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-primary {
-    background: var(--primary);
-    color: var(--white);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
-}
-
-.btn-secondary {
-    background: var(--bg-secondary);
-    color: var(--primary);
-    border: 2px solid var(--primary-light);
-}
-
-.btn-primary:hover {
-    background: #6D28D9; /* Darker purple for hover */
-    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.3);
-}
-
-.btn-secondary:hover {
+.btn-icon-small {
+    padding: 8px 16px;
     background: var(--bg-tertiary);
-}
-
-.upload-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: transparent;
-    border: 0.5px solid var(--primary-light);
-    color: var(--primary);
+    color: var(--text-secondary);
     border-radius: 12px;
     transition: all 0.2s ease;
     cursor: pointer;
     font-size: 0.95rem;
-    min-width: 150px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    gap: 0.5rem;
+    border: none;
 }
 
-.upload-btn i {
-    font-size: 1.2rem;
-}
-
-.upload-text {
-    font-weight: 500;
-    color: var(--primary);
-}
-
-.upload-btn:hover {
+.btn-icon-small:hover {
     background: var(--primary-light);
     color: var(--primary);
 }
 
-.upload-btn:hover .upload-text {
+.btn-icon {
+    padding: 8px 16px;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.95rem;
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+}
+
+.btn-icon:hover {
+    background: var(--primary-light);
     color: var(--primary);
+}
+
+.upload-text {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.btn-icon:hover .upload-text {
+    color: var(--primary);
+}
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--test-secondary);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-tertiary);
 }
 
 .back-btn {
@@ -322,7 +314,7 @@ textarea::placeholder {
 }
 
 .back-btn:hover {
-    background-color: #6D28D9; /* Darker purple for hover */
+    background-color: #6D28D9;
 }
 
 .action-button {
@@ -344,7 +336,7 @@ textarea::placeholder {
 }
 
 .primary-button:hover {
-    background: #6D28D9; /* Darker purple for hover */
+    background: #6D28D9;
 }
 
 .secondary-button {
@@ -363,7 +355,6 @@ input[type="file"] {
 
 .file-upload-form {
     text-align: center;
-    margin-bottom: 1.5rem;
 }
 
 .drag-over {
@@ -410,12 +401,6 @@ input[type="file"] {
 
 .entry-card:hover {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-    .entry-card:hover {
-        box-shadow: 0 8px 24px rgba(90, 90, 90, 0.1);
-    }
 }
 
 .entry-content {
@@ -472,17 +457,10 @@ input[type="file"] {
     line-height: 1.5;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--text-primary);
-    border: 1px solid var(--border-primary);
     box-shadow: 0 4px 20px rgba(124, 58, 237, 0.05);
 }
 
-@media (prefers-color-scheme: dark) {
-    .content-view {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    }
-}
-
-/* Scratchpad Styles (Both MD and Rich Text) */
+/* Notepad Styles (Both MD and Rich Text) */
 .note-container {
     display: flex;
     flex-direction: column;
@@ -499,7 +477,7 @@ input[type="file"] {
     align-items: center;
     padding-bottom: 15px;
     margin-bottom: 20px;
-    gap: 10px;
+    gap: 0.75rem;
 }
 
 .app-title {
@@ -534,12 +512,11 @@ input[type="file"] {
     gap: 5px;
     background-color: var(--bg-secondary);
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 12px;
     justify-content: center;
     overflow-x: auto;
     white-space: nowrap;
     margin-bottom: 10px;
-    border: 1px solid var(--border-primary);
 }
 
 .editor-toolbar button {
@@ -587,7 +564,6 @@ input[type="file"] {
     padding: 15px;
     background-color: var(--bg-secondary);
     color: var(--text-primary);
-    border: 1px solid var(--border-primary);
     border-radius: 12px;
     resize: none;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
@@ -599,10 +575,9 @@ input[type="file"] {
 
 /* Markdown Preview */
 #markdown-preview {
-    display: none; /* Initially hidden */
+    display: none;
     flex: 1;
     padding: 15px;
-    border: 1px solid var(--border-primary);
     border-radius: 12px;
     background-color: var(--bg-secondary);
     overflow-y: auto;
@@ -752,7 +727,6 @@ input[type="file"] {
     padding: 1em;
     overflow-x: auto;
     margin: 1.5em 0;
-    border: 1px solid var(--border-primary);
 }
 
 .markdown-body code {
@@ -822,9 +796,7 @@ input[type="file"] {
 .modal-content textarea {
     width: 100%;
     padding: 8px;
-    margin-bottom: 15px;
     background-color: var(--bg-tertiary);
-    border: 1px solid var(--border-primary);
     color: var(--text-primary);
     border-radius: 8px;
 }
