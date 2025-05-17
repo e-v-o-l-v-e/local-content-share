@@ -143,7 +143,21 @@ go build .
 
 ### A Note on Reverse Proxies
 
-Reverse proxies are fairly common in homelab settings to assign SSL certificates
+Reverse proxies are fairly common in homelab settings to assign SSL certificates and use domains. The reason for this note is that some reverse proxy settings may interfere with the functioning of this app. Primarily, there are 2 features that could be affected:
+
+- File Size: reverse proxy software may impose a limit on file sizes, but Local Content Share does not
+- Upload Progress: file upload progress for large files may not be visible until the file has been uploaded because of buffering setups on rever proxy software
+
+Following is a sample fix for Nginx Proxy Manager, please look into equivalent settings for other reverse proxy setups like Caddy.
+
+For the associated proxy host in NPM, click Edit and visit the Advanced tab. There, paste the following custom configuration:
+
+```
+client_max_body_size 5G;
+proxy_request_buffering off;
+```
+
+This configuration will set the maximum accept size for file transfer through NPM as 5 GB and will also disable buffering so interaction will take place directly with Local Content Share.
 
 ### Backend Data Structure
 
