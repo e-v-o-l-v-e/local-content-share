@@ -134,7 +134,7 @@ go build .
       - The Custom option will prompt to ask for the expiry after you click submit/upload
       - The value for custom expiration can be of the format `NT` (eg. `34m`, `3w`, `2M`, `11d`)
       - N is the number and T is the time denomination (m=minute, h=hour, d=day, w=week, M=month, y=year)
-   - Use the `DEFAULT_EXPIRY` environment variable to set a default expiration
+   - Use the `DEFAULT_EXPIRY` environment variable to set a default expiration (follows format of Custom specified above)
       - This value will be set as default on the home page instead of `Never`
       - The other options will still be available by cycling if needed
 - The Notepad is for writing something quickly and getting back to it from any device
