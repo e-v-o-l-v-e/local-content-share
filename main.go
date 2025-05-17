@@ -7,43 +7,27 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 )
 
-//go:embed templates/*
+//go:embed templates/* static/*
 var content embed.FS
 
-//go:embed static/style.css
-var styleCSS []byte
-
-//go:embed static/favicon.ico
-var faviconICO []byte
-
-//go:embed static/manifest.json
-var manifestJSON []byte
-
-//go:embed static/sw.js
-var serviceWorkerJS []byte
-
-//go:embed static/icon-192.png
-var icon192PNG []byte
-
-//go:embed static/icon-512.png
-var icon512PNG []byte
-
-//go:embed static/md.js
-var mdJS []byte
-
-//go:embed static/rtext.js
-var rtextJS []byte
+// SSE client management
+var (
+	clients   = make(map[chan string]bool)
+	clientMux sync.Mutex
+)
 
 type Entry struct {
 	ID       string
@@ -58,6 +42,7 @@ type ExpirationTracker struct {
 }
 
 var expirationTracker *ExpirationTracker
+var expirationOptions = []string{"Never", "1 hour", "4 hours", "1 day", "Custom"}
 
 func initExpirationTracker() *ExpirationTracker {
 	tracker := &ExpirationTracker{
@@ -77,6 +62,40 @@ func initExpirationTracker() *ExpirationTracker {
 	return tracker
 }
 
+func parseCustomDuration(customExpiry string) time.Duration {
+	customExpiry = strings.TrimSpace(customExpiry)
+	// Regex to match the format like 1h, 30m, 2d, etc.
+	re := regexp.MustCompile(`^(\d+)([hmMdwy])$`)
+	matches := re.FindStringSubmatch(customExpiry)
+	if len(matches) < 2 { // bad value
+		return 5 * time.Minute
+	}
+	value, err := strconv.Atoi(matches[1])
+	if err != nil {
+		return 5 * time.Minute
+	}
+	unit := strings.ToLower(matches[2])
+	switch unit {
+	case "m": // minutes
+		if value < 5 {
+			return 5 * time.Minute
+		}
+		return time.Duration(value) * time.Minute
+	case "h": // hours
+		return time.Duration(value) * time.Hour
+	case "d": // days
+		return time.Duration(value) * 24 * time.Hour
+	case "w": // weeks
+		return time.Duration(value) * 7 * 24 * time.Hour
+	case "M": // months
+		return time.Duration(value) * 30 * 24 * time.Hour
+	case "y": // years
+		return time.Duration(value) * 365 * 24 * time.Hour
+	default:
+		return 5 * time.Minute
+	}
+}
+
 func (t *ExpirationTracker) SetExpiration(fileID, expiryOption string) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -91,12 +110,17 @@ func (t *ExpirationTracker) SetExpiration(fileID, expiryOption string) {
 			duration = 4 * time.Hour
 		case "1 day":
 			duration = 24 * time.Hour
-		default:
-			// Default to no expiration
-			delete(t.Expirations, fileID)
+		case "Custom":
+			// Should not happen anymore.
 			return
+		default:
+			if len(expiryOption) > 0 {
+				duration = parseCustomDuration(expiryOption)
+			} else {
+				delete(t.Expirations, fileID)
+				return
+			}
 		}
-		// Set the expiration time
 		t.Expirations[fileID] = time.Now().Add(duration)
 	}
 	t.saveToFile()
@@ -137,6 +161,7 @@ func (t *ExpirationTracker) CleanupExpired() []string {
 	}
 	if len(expiredFiles) > 0 {
 		t.saveToFile()
+		notifyContentChange()
 	}
 	return expiredFiles
 }
@@ -167,9 +192,9 @@ const rtextPlaceholder = `<h1>Welcome to Rich Text Notepad</h1>
 
 func generateUniqueFilename(baseDir, baseName string) string {
 	// Sanitize: allow only letters, numbers, hyphen, underscore, and space
-	reg := regexp.MustCompile(`[^a-zA-Z0-9\.\-_\s]`)
+	reg := regexp.MustCompile(`[^\p{L}\p{N}\p{M}\s\.\-_]`)
 	sanitizedName := reg.ReplaceAllString(baseName, "-")
-	log.Printf("Sanitized name %s -TO- %s\n", baseName, sanitizedName)
+	log.Printf("Sanitized name %s TO %s\n", baseName, sanitizedName)
 	// First try without random prefix
 	if _, err := os.Stat(filepath.Join(baseDir, sanitizedName)); os.IsNotExist(err) {
 		return sanitizedName
@@ -180,6 +205,48 @@ func generateUniqueFilename(baseDir, baseName string) string {
 		newName := fmt.Sprintf("%s-%s", randChars, sanitizedName)
 		if _, err := os.Stat(filepath.Join(baseDir, newName)); os.IsNotExist(err) {
 			return newName
+		}
+	}
+}
+
+func handleContentUpdates(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	messageChan := make(chan string)
+	clientMux.Lock()
+	clients[messageChan] = true
+	clientMux.Unlock()
+
+	defer func() {
+		clientMux.Lock()
+		delete(clients, messageChan)
+		clientMux.Unlock()
+		close(messageChan)
+	}()
+	// Send an initial message
+	fmt.Fprintf(w, "data: %s\n\n", "connected")
+	w.(http.Flusher).Flush()
+	for {
+		select {
+		case <-r.Context().Done():
+			return
+		case msg := <-messageChan:
+			fmt.Fprintf(w, "data: %s\n\n", msg)
+			w.(http.Flusher).Flush()
+		}
+	}
+}
+
+func notifyContentChange() {
+	clientMux.Lock()
+	defer clientMux.Unlock()
+	for client := range clients {
+		select {
+		case client <- "content_updated":
+		default:
 		}
 	}
 }
@@ -205,10 +272,22 @@ func main() {
 
 	// Initialize the expiration tracker
 	expirationTracker = initExpirationTracker()
+	customExpiry := os.Getenv("DEFAULT_EXPIRY")
+	if customExpiry != "" {
+		if customExpiry == "1d" {
+			expirationOptions = []string{"1 day", "Never", "1 hour", "4 hours", "Custom"}
+		} else if customExpiry == "4h" {
+			expirationOptions = []string{"4 hours", "Never", "1 hour", "1 day", "Custom"}
+		} else if customExpiry == "1h" {
+			expirationOptions = []string{"1 hour", "Never", "4 hours", "1 day", "Custom"}
+		} else {
+			expirationOptions = append([]string{customExpiry}, expirationOptions...)
+		}
+	}
 
 	// Goroutine to periodically expire files
 	go func() {
-		ticker := time.NewTicker(30 * time.Minute)
+		ticker := time.NewTicker(3 * time.Minute) // 3 minutes is sparse enough, load is extremely minimal as the operation is fast (in memory tracker)
 		defer ticker.Stop()
 		for range ticker.C {
 			expirationTracker.CleanupExpired()
@@ -260,44 +339,106 @@ func main() {
 		tmpl.ExecuteTemplate(w, "rtext.html", nil)
 	})
 
-	http.HandleFunc("/md.js", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/javascript")
-		w.Write(mdJS)
+	// Retrieve custom expiration options
+	http.HandleFunc("/getExpiryOptions", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(expirationOptions)
 	})
 
-	http.HandleFunc("/rtext.js", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/javascript")
-		w.Write(rtextJS)
-	})
+	// Serve static files from embedded filesystem
+	staticFS, err := fs.Sub(content, "static")
+	if err != nil {
+		log.Fatalf("Failed to create static sub-filesystem: %v", err)
+	}
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticFS))))
 
 	http.HandleFunc("/style.css", func(w http.ResponseWriter, r *http.Request) {
+		file, err := staticFS.Open("style.css")
+		if err != nil {
+			http.Error(w, "Style not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
 		w.Header().Set("Content-Type", "text/css")
-		w.Write(styleCSS)
-	})
-
-	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "image/x-icon")
-		w.Write(faviconICO)
+		io.Copy(w, file)
 	})
 
 	http.HandleFunc("/manifest.json", func(w http.ResponseWriter, r *http.Request) {
+		file, err := staticFS.Open("manifest.json")
+		if err != nil {
+			http.Error(w, "Manifest not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(manifestJSON)
+		io.Copy(w, file)
 	})
 
 	http.HandleFunc("/sw.js", func(w http.ResponseWriter, r *http.Request) {
+		file, err := staticFS.Open("sw.js")
+		if err != nil {
+			http.Error(w, "Service worker not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
 		w.Header().Set("Content-Type", "application/javascript")
-		w.Write(serviceWorkerJS)
+		io.Copy(w, file)
+	})
+
+	http.HandleFunc("/md.js", func(w http.ResponseWriter, r *http.Request) {
+		file, err := staticFS.Open("md.js")
+		if err != nil {
+			http.Error(w, "JavaScript not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
+		w.Header().Set("Content-Type", "application/javascript")
+		io.Copy(w, file)
+	})
+
+	http.HandleFunc("/rtext.js", func(w http.ResponseWriter, r *http.Request) {
+		file, err := staticFS.Open("rtext.js")
+		if err != nil {
+			http.Error(w, "JavaScript not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
+		w.Header().Set("Content-Type", "application/javascript")
+		io.Copy(w, file)
+	})
+
+	// Handle favicon and icons
+	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		file, err := staticFS.Open("favicon.ico")
+		if err != nil {
+			http.Error(w, "Favicon not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
+		w.Header().Set("Content-Type", "image/x-icon")
+		io.Copy(w, file)
 	})
 
 	http.HandleFunc("/icon-192.png", func(w http.ResponseWriter, r *http.Request) {
+		file, err := staticFS.Open("icon-192.png")
+		if err != nil {
+			http.Error(w, "Icon not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
 		w.Header().Set("Content-Type", "image/png")
-		w.Write(icon192PNG)
+		io.Copy(w, file)
 	})
 
 	http.HandleFunc("/icon-512.png", func(w http.ResponseWriter, r *http.Request) {
+		file, err := staticFS.Open("icon-512.png")
+		if err != nil {
+			http.Error(w, "Icon not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
 		w.Header().Set("Content-Type", "image/png")
-		w.Write(icon512PNG)
+		io.Copy(w, file)
 	})
 
 	// API endpoint to load notepad content
@@ -417,6 +558,7 @@ func main() {
 				}
 			}
 		}
+		notifyContentChange()
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
@@ -457,8 +599,9 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		log.Printf("Renamed %s to %s\n", oldPath, newName)
+		notifyContentChange()
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+		log.Printf("Renamed %s to %s\n", oldPath, newName)
 	})
 
 	http.HandleFunc("/raw/", func(w http.ResponseWriter, r *http.Request) {
@@ -598,6 +741,7 @@ func main() {
 		delete(expirationTracker.Expirations, filename)
 		expirationTracker.saveToFile()
 		expirationTracker.mu.Unlock()
+		notifyContentChange()
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		log.Printf("Deleted %s\n", filename)
 	})
@@ -622,9 +766,13 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		notifyContentChange()
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		log.Printf("Edited %s\n", id)
 	})
+
+	// SSE Updates for content refresh
+	http.HandleFunc("/api/updates", handleContentUpdates)
 
 	// Start server
 	log.Fatal(http.ListenAndServe(*listenAddress, nil))
