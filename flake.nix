@@ -9,25 +9,27 @@
     { self, nixpkgs }:
     let
 
-      # System types to support.
-      supportedSystems = [
-        "x86_64-linux"
-        "x86_64-darwin"
-        "aarch64-linux"
-        "aarch64-darwin"
-      ];
+      version = "31";
 
-      # Helper function to generate an attrset '{ x86_64-linux = f "x86_64-linux"; ... }'.
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-      
-      # Nixpkgs instantiated for supported system types.
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
+      pkgs = import nixpkgs { system = "x86_64-linux"; };
 
     in
     {
+      packages.x86_64-linux.local-content-share = pkgs.buildGoModule {
+        pname = "local-content-share";
+        inherit version;
+        src = ./.;
 
-      packages.x86_64-linux.local-content-share = { };
+        # no dependencies, hash must be null
+        vendorHash = null;
+      };
+
+      meta = {
+        mainProgram = "local-content-share";
+        description = "Self-hosted app for storing/sharing text/files in your local network with no setup on client devices";
+        homepage = "https://github.com/Tanq16/local-content-share";
+      };
+
       packages.x86_64-linux.default = self.packages.x86_64-linux.local-content-share;
-
     };
 }
