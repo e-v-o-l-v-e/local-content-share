@@ -7,6 +7,9 @@ mkdir -p static/fonts
 mkdir -p static/js
 mkdir -p static/css
 
+# Download Tailwind CSS
+curl -sL "https://cdn.tailwindcss.com?plugins=typography" -o "static/js/tailwindcss.js"
+
 # Download Font Awesome 6.7.2
 echo "Downloading Font Awesome..."
 curl -sL https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css -o static/fontawesome/css/all.min.css
@@ -41,6 +44,13 @@ curl -sL https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.mi
 echo "Downloading Catppuccin theme for Highlight.js..."
 curl -sL https://cdn.jsdelivr.net/npm/@catppuccin/highlightjs@0.1.1/css/catppuccin-latte.css -o static/css/catppuccin-latte.css
 curl -sL https://cdn.jsdelivr.net/npm/@catppuccin/highlightjs@0.1.1/css/catppuccin-mocha.css -o static/css/catppuccin-mocha.css
+
+# Remove background property from Catppuccin themes
+echo "Patching Catppuccin themes..."
+sed -i.bak 's/\(code\.hljs{color:[^;]*\);background:[^}]*\}/\1}/' static/css/catppuccin-latte.css
+sed -i.bak 's/\(code\.hljs{color:[^;]*\);background:[^}]*\}/\1}/' static/css/catppuccin-mocha.css
+rm static/css/catppuccin-latte.css.bak
+rm static/css/catppuccin-mocha.css.bak
 
 # Download Marked.js for markdown parsing
 echo "Downloading Marked.js..."
