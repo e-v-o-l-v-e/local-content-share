@@ -189,6 +189,7 @@ function example() {
 ` + "```"
 
 func generateUniqueFilename(baseDir, baseName string) string {
+	baseName = strings.TrimSpace(baseName)
 	// Sanitize: allow only letters (+unicode), numbers, space, dot, hyphen, underscore, () and []
 	reg := regexp.MustCompile(`[^\p{L}\p{N}\p{M}\s\.\-_()\[\]]`)
 	sanitizedName := reg.ReplaceAllString(baseName, "-")
@@ -258,8 +259,11 @@ func main() {
 	if err := os.MkdirAll(filepath.Join("data", "text"), 0755); err != nil {
 		log.Fatal(err)
 	}
+	if err := os.MkdirAll(filepath.Join("data", "notepad"), 0755); err != nil {
+		log.Fatal(err)
+	}
 	log.Println("Data directory created/reused without errors.")
-	createFileIfNotExists("notepad.file", mdPlaceholder)
+	createFileIfNotExists("notepad/md.file", mdPlaceholder)
 	createFileIfNotExists("links.file", "")
 
 	// Initialize the expiration tracker
