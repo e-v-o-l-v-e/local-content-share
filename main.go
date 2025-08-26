@@ -486,7 +486,7 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		if err := r.ParseMultipartForm(10 << 20); err != nil { // 10 MB limit for form
+		if err := r.ParseMultipartForm(100 << 20); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
