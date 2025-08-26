@@ -141,6 +141,10 @@ For the associated proxy host in NPM, click Edit and visit the Advanced tab. The
 ```
 client_max_body_size 5G;
 proxy_request_buffering off;
+proxy_buffering off;
+proxy_read_timeout 3600s;
+proxy_send_timeout 3600s;
+proxy_connect_timeout 3600s;
 ```
 
 This configuration will set the maximum accept size for file transfer through NPM as 5 GB and will also disable buffering so interaction will take place directly with Local Content Share.
