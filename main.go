@@ -225,6 +225,8 @@ func handleContentUpdates(w http.ResponseWriter, r *http.Request) {
 		clientMux.Unlock()
 		close(messageChan)
 	}()
+	ticker := time.NewTicker(20 * time.Second)
+	defer ticker.Stop()
 	// Send an initial message
 	fmt.Fprintf(w, "data: %s\n\n", "connected")
 	w.(http.Flusher).Flush()
@@ -234,6 +236,9 @@ func handleContentUpdates(w http.ResponseWriter, r *http.Request) {
 			return
 		case msg := <-messageChan:
 			fmt.Fprintf(w, "data: %s\n\n", msg)
+			w.(http.Flusher).Flush()
+		case <-ticker.C: // send keep-alive msg
+			fmt.Fprintf(w, ": keep-alive\n\n")
 			w.(http.Flusher).Flush()
 		}
 	}
@@ -270,13 +275,14 @@ func main() {
 	expirationTracker = initExpirationTracker()
 	customExpiry := os.Getenv("DEFAULT_EXPIRY")
 	if customExpiry != "" {
-		if customExpiry == "1d" {
+		switch customExpiry {
+		case "1d":
 			expirationOptions = []string{"1 day", "Never", "1 hour", "4 hours", "Custom"}
-		} else if customExpiry == "4h" {
+		case "4h":
 			expirationOptions = []string{"4 hours", "Never", "1 hour", "1 day", "Custom"}
-		} else if customExpiry == "1h" {
+		case "1h":
 			expirationOptions = []string{"1 hour", "Never", "4 hours", "1 day", "Custom"}
-		} else {
+		default:
 			expirationOptions = append([]string{customExpiry}, expirationOptions...)
 		}
 	}
@@ -442,7 +448,8 @@ func main() {
 
 	// API endpoint to load notepad content
 	http.HandleFunc("/notepad/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+		switch r.Method {
+		case "GET":
 			filename := strings.TrimPrefix(r.URL.Path, "/notepad/")
 			if filename != "md.file" { // && filename != "rtext.file" {
 				http.Error(w, "Invalid notepad file", http.StatusBadRequest)
@@ -457,7 +464,7 @@ func main() {
 			w.Header().Set("Cache-Control", "no-store")
 			w.Write(content)
 			return
-		} else if r.Method == "POST" {
+		case "POST":
 			filename := strings.TrimPrefix(r.URL.Path, "/notepad/")
 			if filename != "md.file" { // && filename != "rtext.file" {
 				http.Error(w, "Invalid notepad file", http.StatusBadRequest)
@@ -574,6 +581,12 @@ func main() {
 			}
 		}
 		notifyContentChange()
+		// Send succes for AJAX
+		if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("Success"))
+			return
+		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 

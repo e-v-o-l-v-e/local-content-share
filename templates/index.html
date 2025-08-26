@@ -520,7 +520,9 @@
                     method: 'POST'
                 })
                 .then(response => {
-                    if (!response.ok) {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
                         console.error('Failed to delete the item.');
                     }
                 })
@@ -564,7 +566,10 @@
         newItemForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const files = fileInput.files;
-            if (files.length === 0 && this.elements.content.value.trim() === '') {
+            const isFileUpload = files.length > 0;
+            const isTextSubmission = this.elements.content.value.trim() !== '';
+            // Use old form if not file
+            if (!isFileUpload && isTextSubmission) {
                 this.submit();
                 return;
             }
@@ -572,6 +577,7 @@
             const formData = new FormData(this);
             const xhr = new XMLHttpRequest();
             xhr.open('POST', this.action, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             xhr.upload.onprogress = function(event) {
                 if (event.lengthComputable) {
                     const percentComplete = (event.loaded / event.total) * 100;
@@ -580,7 +586,7 @@
             };
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    closeAndResetNewItemModal();
+                    window.location.reload();
                 } else {
                     console.error('Upload failed:', xhr.statusText);
                     progressContainer.classList.add('hidden');
@@ -594,21 +600,36 @@
         });
 
         // SSE for live updates
-        document.addEventListener('DOMContentLoaded', function() {
-            const evtSource = new EventSource("/api/updates");
+        let evtSource;
+        function connectSSE() {
+            if (evtSource) {
+                evtSource.close();
+            }
+            evtSource = new EventSource("/api/updates");
             evtSource.onmessage = function(event) {
                 if (event.data === "content_updated") {
                     const isModalOpen = document.querySelector('#new-item-modal:not(.hidden), #new-link-modal:not(.hidden), #rename-modal:not(.hidden), #view-snippet-modal:not(.hidden), #confirmation-modal:not(.hidden)');
                     if (!isModalOpen) {
-                        setTimeout(() => { window.location.reload(); }, 100);
+                        setTimeout(() => { window.location.reload(); }, 250);
                     }
                 }
             };
             evtSource.onerror = function() {
-                console.log("SSE connection error. Reconnecting...");
+                console.log("SSE connection error. Will attempt to reconnect.");
                 evtSource.close();
-                setTimeout(() => new EventSource("/api/updates"), 3000);
+                // Let browser reconnect with EventSource
             };
+        }
+
+        // SSE connect aftwr page load
+        window.addEventListener('load', function() {
+            connectSSE();
+        });
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && (!evtSource || evtSource.readyState === EventSource.CLOSED)) {
+                console.log("Reconnecting SSE, tab visible");
+                connectSSE();
+            }
         });
     </script>
 </body>
