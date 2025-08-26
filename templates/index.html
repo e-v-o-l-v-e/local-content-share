@@ -197,6 +197,9 @@
                 <div>
                     <textarea name="content" placeholder="Content (uploaded files are prioritized when both are provided)" rows="4" class="w-full bg-base px-4 py-3 text-text placeholder-overlay1 focus:outline-none resize-y rounded-2xl"></textarea>
                 </div>
+                <div id="progress-container" class="w-full bg-surface0 rounded-full h-2.5 my-4 hidden">
+                    <div id="progress-bar" class="bg-blue h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
                 <div class="grid grid-cols-3 gap-3 mt-3">
                     <button type="button" id="expiry-button" class="flex items-center justify-center gap-2 py-2 bg-base hover:bg-surface0 rounded-xl cursor-pointer transition-colors">
                         <i class="fas fa-clock text-subtext0"></i>
@@ -283,6 +286,9 @@
         }
 
         const newItemModal = document.getElementById('new-item-modal');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+
         // Reset the New Item modal
         function closeAndResetNewItemModal() {
             const form = document.getElementById('new-item-form');
@@ -295,6 +301,8 @@
             fileInput.parentElement.parentElement.style.display = 'block';
             fileInput.value = null;
             fileNameDisplay.textContent = '';
+            progressContainer.classList.add('hidden');
+            progressBar.style.width = '0%';
         }
 
         // Modal handling for New Item
@@ -549,6 +557,40 @@
         viewModalBackdrop.addEventListener('click', () => viewSnippetModal.classList.add('hidden'));
         viewCopyButton.addEventListener('click', () => {
             copyToClipboard(contentToCopy, viewCopyButton);
+        });
+
+        // New form submission with progress
+        const newItemForm = document.getElementById('new-item-form');
+        newItemForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const files = fileInput.files;
+            if (files.length === 0 && this.elements.content.value.trim() === '') {
+                this.submit();
+                return;
+            }
+            progressContainer.classList.remove('hidden');
+            const formData = new FormData(this);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', this.action, true);
+            xhr.upload.onprogress = function(event) {
+                if (event.lengthComputable) {
+                    const percentComplete = (event.loaded / event.total) * 100;
+                    progressBar.style.width = percentComplete + '%';
+                }
+            };
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    closeAndResetNewItemModal();
+                } else {
+                    console.error('Upload failed:', xhr.statusText);
+                    progressContainer.classList.add('hidden');
+                }
+            };
+            xhr.onerror = function() {
+                console.error('An error occurred during the upload.');
+                progressContainer.classList.add('hidden');
+            };
+            xhr.send(formData);
         });
 
         // SSE for live updates
