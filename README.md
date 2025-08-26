@@ -74,6 +74,61 @@ Download the appropriate binary for your system from the [latest release](https:
 
 Make the binary executable (for Linux/macOS) with `chmod +x local-content-share-*` and then run the binary with `./local-content-share-*`. The application will be available at `http://localhost:8080`.
 
+
+### Using Nix flakes
+
+#### Run without installing
+```sh
+nix run nixpkgs#local-content-share
+```
+
+#### Install
+```sh
+nix profile install nixpkgs#local-content-share
+```
+
+### Using the NixOS Module
+
+> [!NOTE]
+> The NixOS module has not yet been [merged](https://github.com/NixOS/nixpkgs/pull/426887) in nixpkgs. Until then, you'll need to add the flake to your inputs as shown above.
+
+Add the flake to your inputs:
+```nix
+# flake.nix
+{
+  inputs = {
+    local-content-share = {
+      url = "github:Tanq16/local-content-share";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+}
+```
+
+Enable the service:
+```nix
+# configuration.nix
+{ inputs, ... }: 
+{
+  imports = [
+    inputs.local-content-share.nixosModules.local-content-share 
+  ];
+
+  services.local-content-share.enable = true;
+}
+```
+
+The NixOS module provides the following options:
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `enable` | false | Whether the service should be enabled or not |
+| `port` | 8080 | The port that local-content-share will be available at |
+| `openFirewall` | false | Whether nixos should open the port in the firewall |
+| `package` | this flake's package | The package used by nixos for the service |
+
+
+
 ### Local development
 
 With `Go 1.23+` installed, run the following to download the binary to your GOBIN:
