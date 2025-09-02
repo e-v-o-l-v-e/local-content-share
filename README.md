@@ -75,10 +75,7 @@ Download the appropriate binary for your system from the [latest release](https:
 Make the binary executable (for Linux/macOS) with `chmod +x local-content-share-*` and then run the binary with `./local-content-share-*`. The application will be available at `http://localhost:8080`.
 
 
-### Using Nix/NixOS
-
-<details>
-<summary>With flakes</summary>
+### Using Nix
 
 #### Run without installing
 ```sh
@@ -90,25 +87,7 @@ nix run nixpkgs#local-content-share
 nix profile install nixpkgs#local-content-share
 ```
 
-</details>
-
-<details>
-<summary>Without flakes</summary>
-
-#### Run
-```sh
-nix-shell -p local-content-share --run local-content-share
-```
-
-#### Install
-```sh
-nix-env --install local-content-share
-```
-
-</details>
-
-<details>
-<summary>NixOS Module</summary>
+### Using the Nixos service
 
 > **Note**: The NixOS module has not yet been [merged](https://github.com/NixOS/nixpkgs/pull/426887) in nixpkgs. Until then, you'll need to add the flake to your inputs as shown above.
 
@@ -138,9 +117,6 @@ Enable the service:
 }
 ```
 
-<details>
-<summary>Module Options</summary>
- 
 The NixOS module provides the following options:
 
 | Option | Default | Description |
@@ -149,9 +125,6 @@ The NixOS module provides the following options:
 | `package` | flake package | The package used by nixos for the service |
 | `openFirewall` | false | Whether nixos should open the port in the firewall |
 
-
-</details>
-</details>
 
 ### Local development
 
