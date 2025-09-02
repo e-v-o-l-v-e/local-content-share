@@ -2,7 +2,7 @@ name: Build Binary
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main flake-test ]
 
 permissions:
   contents: write
